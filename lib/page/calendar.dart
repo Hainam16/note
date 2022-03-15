@@ -55,7 +55,7 @@ class _CalendarState extends State<Calendar> {
                   ),
                   selectedTextStyle: TextStyle(color: Colors.white),
                   todayDecoration: BoxDecoration(
-                      color: Colors.redAccent, shape: BoxShape.circle),
+                      color: Colors.pink, shape: BoxShape.circle),
                   defaultDecoration: BoxDecoration(
                     shape: BoxShape.circle,
                   ),
@@ -120,6 +120,7 @@ class _CalendarState extends State<Calendar> {
                     children: [
                       TextFormField(
                         decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
                           hintText: 'Nhập ghi chú',
                         ),
                         controller: controller.eventController.value,
@@ -136,7 +137,7 @@ class _CalendarState extends State<Calendar> {
                                 },
                                 icon: const Icon(
                                   Icons.access_time_rounded,
-                                  color: Colors.grey,
+                                  color: Colors.red,
                                 ),
                               ),
                         ],

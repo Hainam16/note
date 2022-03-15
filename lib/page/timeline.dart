@@ -33,12 +33,16 @@ class TimeLine extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                 e!.title.toString(),
-                                  style: const TextStyle(color: Colors.white,fontSize: 15),
+                                Expanded(
+                                  child: Text(
+                                   e!.title,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(color: Colors.white,fontSize: 15),
+                                    maxLines: 1,
+                                  ),
                                 ),
                                 Text(
-                                  e.hour.toString(),
+                                  e.hour,
                                   style: const TextStyle(color: Colors.white,fontSize: 15),
                                 ),
                               ],
