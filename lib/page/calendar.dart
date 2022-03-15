@@ -164,8 +164,7 @@ class _CalendarState extends State<Calendar> {
                             selectedModels[selectedDay]!.add(
                               Models(
                                   title: controller.eventController.value.text,
-                                  hour:
-                                      controller.startTime.value,
+                                  hour: controller.startTime.value,
                                   day: controller.focusedDayController.value),
                             );
                           } else {
