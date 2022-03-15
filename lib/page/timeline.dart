@@ -1,9 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:note/controller/controller.dart';
+import 'package:note/import.dart';
 import 'package:timelines/timelines.dart';
-import 'package:get/get.dart';
-
-
 class TimeLine extends StatelessWidget {
   const TimeLine({Key? key}) : super(key: key);
 
@@ -15,9 +11,8 @@ class TimeLine extends StatelessWidget {
           body: Obx(()=>SingleChildScrollView(
             child: Column(
               children: [
-                ElevatedButton(onPressed: (){
-                  Get.back();
-                }, child: const Text('Calendar')),
+                const SizedBox(height: 20),
+                MyButton(label: 'Calendar', onTap:(){Get.back();}, color: Colors.blueAccent, ),
                 TimelineTile(
                   mainAxisExtent:150,
                   nodePosition: 0.2,
