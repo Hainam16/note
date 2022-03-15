@@ -23,7 +23,29 @@ class _TimeLineState extends State<TimeLine> {
   }
   @override
   Widget build(BuildContext context) {
-    Controller controller = Get.put(Controller());
+     Controller controller = Get.put(Controller());
+    return SafeArea(
+      child: Scaffold(
+        body: FixedTimeline.tileBuilder(
+          builder: TimelineTileBuilder.connectedFromStyle(
+            contentsAlign: ContentsAlign.reverse,
+            oppositeContentsBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('${controller.listEvent[index]?.day}'),
+            ),
+            contentsBuilder: (context, index) => Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('${controller.listEvent[index]?.title}'),
+              ),
+            ),
+            connectorStyleBuilder: (context, index) => ConnectorStyle.solidLine,
+            indicatorStyleBuilder: (context, index) => IndicatorStyle.dot,
+            itemCount: controller.listEvent.length,
+          ),
+        ),
+      ),
+    );
     return SafeArea(
       child: Scaffold(
           body: Obx(() => SingleChildScrollView(
@@ -38,7 +60,7 @@ class _TimeLineState extends State<TimeLine> {
                       color: Colors.blueAccent,
                     ),
                     TimelineTile(
-                      mainAxisExtent: 150,
+                      mainAxisExtent: 650,
                       nodePosition: 0.2,
                       oppositeContents: SingleChildScrollView(
                         child: Column(
