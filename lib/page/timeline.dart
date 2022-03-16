@@ -18,103 +18,62 @@ class _TimeLineState extends State<TimeLine> {
     selectedModels = {};
     super.initState();
   }
+
   List<Models> getEventsfromDay(DateTime date) {
     return selectedModels[date] ?? [];
   }
+
   @override
   Widget build(BuildContext context) {
-     Controller controller = Get.put(Controller());
+    Controller controller = Get.put(Controller());
     return SafeArea(
       child: Scaffold(
-        body: FixedTimeline.tileBuilder(
-          builder: TimelineTileBuilder.connectedFromStyle(
-            contentsAlign: ContentsAlign.reverse,
-            oppositeContentsBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('${controller.listEvent[index]?.day}'),
-            ),
-            contentsBuilder: (context, index) => Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('${controller.listEvent[index]?.title}'),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              MyButton(
+                label: 'Calendar',
+                onTap: () {
+                  Get.back();
+                },
+                color: Colors.blueAccent,
               ),
-            ),
-            connectorStyleBuilder: (context, index) => ConnectorStyle.solidLine,
-            indicatorStyleBuilder: (context, index) => IndicatorStyle.dot,
-            itemCount: controller.listEvent.length,
+              const SizedBox(height: 50),
+              FixedTimeline.tileBuilder(
+                builder: TimelineTileBuilder.connectedFromStyle(
+                  contentsAlign: ContentsAlign.reverse,
+                  oppositeContentsBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: Text('${controller.listEvent[index]?.title}',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 15),
+                          maxLines: 1,
+                        ),
+                        ),
+                        Text('${controller.listEvent[index]?.hour}'),
+                      ],
+                    ),
+                  ),
+                  contentsBuilder: (context, index) => Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('${controller.listEvent[index]?.day}'.substring(0,10)),
+                    ),
+                  ),
+                  connectorStyleBuilder: (context, index) =>
+                      ConnectorStyle.solidLine,
+                  indicatorStyleBuilder: (context, index) => IndicatorStyle.outlined,
+                  itemCount: controller.listEvent.length,
+                ),
+              ),
+            ],
           ),
         ),
-      ),
-    );
-    return SafeArea(
-      child: Scaffold(
-          body: Obx(() => SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    MyButton(
-                      label: 'Calendar',
-                      onTap: () {
-                        Get.back();
-                      },
-                      color: Colors.blueAccent,
-                    ),
-                    TimelineTile(
-                      mainAxisExtent: 650,
-                      nodePosition: 0.2,
-                      oppositeContents: SingleChildScrollView(
-                        child: Column(
-                          children: controller.listEvent.value.map((e) {
-                            return Text(
-                              e!.day.toString().substring(0, 10),
-                              style: const TextStyle(color: Colors.black),
-                              textAlign: TextAlign.center,
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      contents: SingleChildScrollView(
-                        child: Column(
-                          children: controller.listEvent.value.map((e) {
-                            return Card(
-                              child: Container(
-                                color: Colors.blue,
-                                padding: const EdgeInsets.all(10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        e!.title,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                            color: Colors.white, fontSize: 15),
-                                        maxLines: 1,
-                                      ),
-                                    ),
-                                    Text(
-                                      e.hour,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 15),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      node: const TimelineNode(
-                        indicator: DotIndicator(),
-                        startConnector: SolidLineConnector(),
-                        endConnector: SolidLineConnector(),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-          ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.pink,
           child: const Icon(Icons.add),
@@ -153,7 +112,9 @@ class _TimeLineState extends State<TimeLine> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Chọn ngày'),
-                      Text(controller.date.value.toString().substring(0, 10),),
+                      Text(
+                        controller.date.value.toString().substring(0, 10),
+                      ),
                       IconButton(
                         onPressed: () {
                           FocusScope.of(context).unfocus();
@@ -222,14 +183,14 @@ class _TimeLineState extends State<TimeLine> {
       initialTime: isStartTime
           ? TimeOfDay.fromDateTime(DateTime.now())
           : TimeOfDay.fromDateTime(
-          DateTime.now().add(const Duration(minutes: 15))),
+              DateTime.now().add(const Duration(minutes: 15))),
     );
     String _formattedTime = _pickedTime!.format(context);
     if (isStartTime) {
       setState(() => controller.startTime.value = _formattedTime);
-    } else {
-    }
+    } else {}
   }
+
   getDate() async {
     DateTime? _pickedDate = await showDatePicker(
       context: context,
@@ -239,6 +200,6 @@ class _TimeLineState extends State<TimeLine> {
     );
     if (_pickedDate != null) {
       setState(() => controller.date.value = _pickedDate);
-    } else{}
+    } else {}
   }
 }

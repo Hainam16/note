@@ -7,7 +7,6 @@ class Controller extends GetxController{
   final date = DateTime.now().obs;
   final focusedDayController = DateTime.now().obs;
   RxList<Models?> listEvent = <Models>[].obs;
-  RxList<Models?> listDay = <Models>[].obs;
   final format = CalendarFormat.month.obs;
 
 }

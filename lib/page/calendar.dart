@@ -28,6 +28,14 @@ class _CalendarState extends State<Calendar> {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              const SizedBox(height: 20),
+              MyButton(
+                label: 'Time line',
+                onTap: () {
+                  Get.to(const TimeLine());
+                },
+                color: Colors.blueAccent,
+              ),
               TableCalendar(
                 focusedDay: selectedDay,
                 firstDay: DateTime.now(),
@@ -65,13 +73,6 @@ class _CalendarState extends State<Calendar> {
                   titleCentered: true,
                   formatButtonShowsNext: false,
                 ),
-              ),
-              MyButton(
-                label: 'Time line',
-                onTap: () {
-                  Get.to(const TimeLine());
-                },
-                color: Colors.blueAccent,
               ),
               const SizedBox(height: 20),
               ...getEventsfromDay(selectedDay).map(
@@ -171,8 +172,7 @@ class _CalendarState extends State<Calendar> {
                             selectedModels[selectedDay] = [
                               Models(
                                   title: controller.eventController.value.text,
-                                  hour:
-                                      controller.startTime.value,
+                                  hour: controller.startTime.value,
                                   day: controller.focusedDayController.value),
                             ];
                           }
@@ -199,7 +199,7 @@ class _CalendarState extends State<Calendar> {
       initialTime: isStartTime
           ? TimeOfDay.fromDateTime(DateTime.now())
           : TimeOfDay.fromDateTime(
-          DateTime.now().add(const Duration(minutes: 15))),
+          DateTime.now().add(const Duration(minutes: 1))),
     );
     String _formattedTime = _pickedTime!.format(context);
     if (isStartTime) {
