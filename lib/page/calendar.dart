@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+import 'package:note/databases/models_store.dart';
 import 'package:note/import.dart';
 import 'timeline.dart';
 
@@ -9,18 +11,41 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
-  late Map<DateTime, List<Models>> selectedModels;
+  late Map<String, List<Models>> selectedModels;
   DateTime selectedDay = DateTime.now();
   Controller controller = Get.put(Controller());
+  final ModelsStore m = ModelsStore();
+
+  List<Models> itemClones = [];
+  var format = DateFormat('dd/MM/yyyy');
 
   @override
   void initState() {
     selectedModels = {};
+    Future.delayed(700.milliseconds, () {
+      m.findAll().then((value) {
+        for (var element in value) {
+          if (selectedModels.containsKey(element.day)) {
+            selectedModels.update(element.day, (value) => value..add(element));
+          } else {
+            selectedModels.putIfAbsent(element.day, () => [element]);
+          }
+          // selectedModels.containsKey(element.day);
+        }
+
+        setState(() {
+          itemClones = value;
+        });
+      });
+    });
+
     super.initState();
   }
+
   List<Models> getEventsfromDay(DateTime date) {
-    return selectedModels[date] ?? [];
+    return selectedModels[format.format(date)] ?? [];
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -32,7 +57,24 @@ class _CalendarState extends State<Calendar> {
               MyButton(
                 label: 'Time line',
                 onTap: () {
-                  Get.to(const TimeLine());
+                  Get.to(TimeLine(
+                    onChanged: (val) {
+                      print("val.......... $val");
+                      if (val != null && val is Map) {
+                        val.forEach((k, v) {
+                          print("k $k.......v... $v");
+                          if (selectedModels.containsKey(k)) {
+                            selectedModels.update(
+                                k, (value) => [...value, ...v]);
+                          } else {
+                            selectedModels.putIfAbsent(k, () => v);
+                          }
+                        });
+                      }
+                      print("selectedModels.......... $selectedModels");
+                      setState(() {});
+                    },
+                  ));
                 },
                 color: Colors.blueAccent,
               ),
@@ -44,7 +86,6 @@ class _CalendarState extends State<Calendar> {
                 onFormatChanged: (CalendarFormat _format) {},
                 startingDayOfWeek: StartingDayOfWeek.sunday,
                 daysOfWeekVisible: true,
-
                 onDaySelected: (DateTime selectDay, DateTime focusDay) {
                   setState(() {
                     selectedDay = selectDay;
@@ -62,8 +103,8 @@ class _CalendarState extends State<Calendar> {
                     shape: BoxShape.circle,
                   ),
                   selectedTextStyle: TextStyle(color: Colors.white),
-                  todayDecoration: BoxDecoration(
-                      color: Colors.pink, shape: BoxShape.circle),
+                  todayDecoration:
+                      BoxDecoration(color: Colors.pink, shape: BoxShape.circle),
                   defaultDecoration: BoxDecoration(
                     shape: BoxShape.circle,
                   ),
@@ -74,6 +115,7 @@ class _CalendarState extends State<Calendar> {
                   formatButtonShowsNext: false,
                 ),
               ),
+              const SizedBox(height: 20),
               const SizedBox(height: 20),
               ...getEventsfromDay(selectedDay).map(
                 (Models model) => ListTile(
@@ -132,15 +174,15 @@ class _CalendarState extends State<Calendar> {
                           const Text('Start Time'),
                           Text(controller.startTime.value),
                           IconButton(
-                                onPressed: () {
-                                  FocusScope.of(context).unfocus();
-                                  getTimeFromUser(isStartTime: true);
-                                },
-                                icon: const Icon(
-                                  Icons.access_time_rounded,
-                                  color: Colors.red,
-                                ),
-                              ),
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              getTimeFromUser(isStartTime: true);
+                            },
+                            icon: const Icon(
+                              Icons.access_time_rounded,
+                              color: Colors.red,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -153,35 +195,30 @@ class _CalendarState extends State<Calendar> {
                     TextButton(
                       child: const Text("Ok"),
                       onPressed: () {
-                        if (controller.eventController.value.text.isEmpty) {
+                        Models models = Models(
+                            title: controller.eventController.value.text,
+                            hour: controller.startTime.value,
+                            day: format
+                                .format(controller.focusedDayController.value));
+                        controller.listEvent.add(models);
+
+                        if (selectedModels
+                            .containsKey(format.format(selectedDay))) {
+                          selectedModels.update(format.format(selectedDay),
+                              (value) => value..add(models));
                         } else {
-                          controller.listEvent.add(
-                            Models(
-                                title: controller.eventController.value.text,
-                                hour: controller.startTime.value,
-                                day: controller.focusedDayController.value),
-                          );
-                          if (selectedModels[selectedDay] != null) {
-                            selectedModels[selectedDay]!.add(
-                              Models(
-                                  title: controller.eventController.value.text,
-                                  hour: controller.startTime.value,
-                                  day: controller.focusedDayController.value),
-                            );
-                          } else {
-                            selectedModels[selectedDay] = [
-                              Models(
-                                  title: controller.eventController.value.text,
-                                  hour: controller.startTime.value,
-                                  day: controller.focusedDayController.value),
-                            ];
-                          }
+                          selectedModels.putIfAbsent(
+                              format.format(selectedDay),
+                              () => [
+                                    models,
+                                  ]);
                         }
+
+                        m.save(models);
                         Get.back();
                         controller.eventController.value.clear();
                         controller.startTime.value;
                         setState(() {});
-                        return;
                       },
                     ),
                   ],
@@ -192,6 +229,7 @@ class _CalendarState extends State<Calendar> {
       ),
     );
   }
+
   getTimeFromUser({required bool isStartTime}) async {
     TimeOfDay? _pickedTime = await showTimePicker(
       initialEntryMode: TimePickerEntryMode.input,
@@ -199,12 +237,11 @@ class _CalendarState extends State<Calendar> {
       initialTime: isStartTime
           ? TimeOfDay.fromDateTime(DateTime.now())
           : TimeOfDay.fromDateTime(
-          DateTime.now().add(const Duration(minutes: 1))),
+              DateTime.now().add(const Duration(minutes: 1))),
     );
     String _formattedTime = _pickedTime!.format(context);
     if (isStartTime) {
       setState(() => controller.startTime.value = _formattedTime);
-    } else {
-    }
+    } else {}
   }
 }

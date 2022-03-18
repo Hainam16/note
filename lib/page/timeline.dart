@@ -1,21 +1,39 @@
+import 'package:intl/intl.dart';
+import 'package:note/databases/models_store.dart';
 import 'package:note/import.dart';
 import 'package:timelines/timelines.dart';
 
 class TimeLine extends StatefulWidget {
-  const TimeLine({Key? key}) : super(key: key);
+  final ValueChanged? onChanged;
+
+  const TimeLine({Key? key, this.onChanged}) : super(key: key);
 
   @override
   State<TimeLine> createState() => _TimeLineState();
 }
 
 class _TimeLineState extends State<TimeLine> {
-  late Map<DateTime, List<Models>> selectedModels;
+  var format = DateFormat('dd/MM/yyyy');
+  late Map<String, List<Models>> selectedModels;
   DateTime selectedDay = DateTime.now();
   Controller controller = Get.put(Controller());
+  final ModelsStore m = ModelsStore();
 
   @override
   void initState() {
     selectedModels = {};
+    Future.delayed(700.milliseconds, () {
+      m.findAll().then((value) {
+
+        value.sort((a, b) {
+          DateTime t1 = DateFormat('dd/MM/yyyy').parse(a.day);
+          DateTime t2 = DateFormat('dd/MM/yyyy').parse(b.day);
+          return t1.compareTo(t2);
+        });
+        controller.listEvent.value = value;
+        setState(() {});
+      });
+    });
     super.initState();
   }
 
@@ -25,7 +43,6 @@ class _TimeLineState extends State<TimeLine> {
 
   @override
   Widget build(BuildContext context) {
-    Controller controller = Get.put(Controller());
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -48,12 +65,13 @@ class _TimeLineState extends State<TimeLine> {
                     child: Row(
                       children: [
                         Expanded(
-                            child: Text('${controller.listEvent[index]?.title}',
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 15),
-                          maxLines: 1,
-                        ),
+                          child: Text(
+                            '${controller.listEvent[index]?.title}',
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 15),
+                            maxLines: 1,
+                          ),
                         ),
                         Text('${controller.listEvent[index]?.hour}'),
                       ],
@@ -62,12 +80,14 @@ class _TimeLineState extends State<TimeLine> {
                   contentsBuilder: (context, index) => Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('${controller.listEvent[index]?.day}'.substring(0,10)),
+                      child: Text('${controller.listEvent[index]?.day}'
+                          .substring(0, 10)),
                     ),
                   ),
                   connectorStyleBuilder: (context, index) =>
                       ConnectorStyle.solidLine,
-                  indicatorStyleBuilder: (context, index) => IndicatorStyle.outlined,
+                  indicatorStyleBuilder: (context, index) =>
+                      IndicatorStyle.outlined,
                   itemCount: controller.listEvent.length,
                 ),
               ),
@@ -80,102 +100,100 @@ class _TimeLineState extends State<TimeLine> {
           onPressed: () => showDialog(
             context: context,
             builder: (context) => Obx(() => AlertDialog(
-              title: const Align(child: Text("Add Event")),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Nhập ghi chú',
+                  title: const Align(child: Text("Add Event")),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Nhập ghi chú',
+                        ),
+                        controller: controller.eventController.value,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Start Time'),
+                          Text(controller.startTime.value),
+                          IconButton(
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              getTime(isStartTime: true);
+                            },
+                            icon: const Icon(
+                              Icons.access_time_rounded,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Chọn ngày'),
+                          Text(
+                            controller.date.value.toString().substring(0, 10),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              getDate();
+                            },
+                            icon: const Icon(
+                              Icons.calendar_today_outlined,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      child: const Text("Cancel"),
+                      onPressed: () => Get.back(),
                     ),
-                    controller: controller.eventController.value,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Start Time'),
-                      Text(controller.startTime.value),
-                      IconButton(
-                        onPressed: () {
-                          FocusScope.of(context).unfocus();
-                          getTime(isStartTime: true);
-                        },
-                        icon: const Icon(
-                          Icons.access_time_rounded,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Chọn ngày'),
-                      Text(
-                        controller.date.value.toString().substring(0, 10),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          FocusScope.of(context).unfocus();
-                          getDate();
-                        },
-                        icon: const Icon(
-                          Icons.calendar_today_outlined,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  child: const Text("Cancel"),
-                  onPressed: () => Get.back(),
-                ),
-                TextButton(
-                  child: const Text("Ok"),
-                  onPressed: () {
-                    if (controller.eventController.value.text.isEmpty) {
-                    } else {
-                      controller.listEvent.add(
-                        Models(
+                    TextButton(
+                      child: const Text("Ok"),
+                      onPressed: () {
+                        Models models = Models(
                             title: controller.eventController.value.text,
                             hour: controller.startTime.value,
-                            day: controller.date.value),
-                      );
-                      if (selectedModels[selectedDay] != null) {
-                        selectedModels[selectedDay]!.add(
-                          Models(
-                              title: controller.eventController.value.text,
-                              hour: controller.startTime.value,
-                              day: controller.date.value),
-                        );
-                      } else {
-                        selectedModels[selectedDay] = [
-                          Models(
-                              title: controller.eventController.value.text,
-                              hour: controller.startTime.value,
-                              day: controller.date.value),
-                        ];
-                      }
-                    }
-                    Get.back();
-                    controller.eventController.value.clear();
-                    controller.startTime.value;
-                    setState(() {});
-                    return;
-                  },
-                ),
-              ],
-            )),
+                            day: format
+                                .format(controller.date.value));
+                        controller.listEvent.add(models);
+
+                        if (selectedModels
+                            .containsKey(format.format(selectedDay))) {
+                          selectedModels.update(format.format(selectedDay),
+                                  (value) => value..add(models));
+                        } else {
+                          selectedModels.putIfAbsent(
+                              format.format(selectedDay),
+                                  () => [
+                                models,
+                              ]);
+                        }
+                        m.save(models);
+                        Get.back();
+                        controller.eventController.value.clear();
+                        controller.startTime.value;
+
+                        if(widget.onChanged != null) widget.onChanged!(selectedModels);
+                        setState(() {});
+                        return;
+                      },
+                    ),
+                  ],
+                )),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
+
   getTime({required bool isStartTime}) async {
     TimeOfDay? _pickedTime = await showTimePicker(
       initialEntryMode: TimePickerEntryMode.input,

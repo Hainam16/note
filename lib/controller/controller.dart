@@ -8,5 +8,4 @@ class Controller extends GetxController{
   final focusedDayController = DateTime.now().obs;
   RxList<Models?> listEvent = <Models>[].obs;
   final format = CalendarFormat.month.obs;
-
 }
