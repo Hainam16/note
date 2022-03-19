@@ -1,7 +1,9 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:note/databases/models_store.dart';
 import 'package:note/import.dart';
-import 'package:timelines/timelines.dart';
+import 'package:note/pages/controller.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 
 class TimeLine extends StatefulWidget {
   final ValueChanged? onChanged;
@@ -24,7 +26,6 @@ class _TimeLineState extends State<TimeLine> {
     selectedModels = {};
     Future.delayed(700.milliseconds, () {
       m.findAll().then((value) {
-
         value.sort((a, b) {
           DateTime t1 = DateFormat('dd/MM/yyyy').parse(a.day);
           DateTime t2 = DateFormat('dd/MM/yyyy').parse(b.day);
@@ -52,44 +53,63 @@ class _TimeLineState extends State<TimeLine> {
               MyButton(
                 label: 'Calendar',
                 onTap: () {
-                  Get.back();
+                  Get.back(result: selectedModels);
                 },
                 color: Colors.blueAccent,
               ),
               const SizedBox(height: 50),
-              FixedTimeline.tileBuilder(
-                builder: TimelineTileBuilder.connectedFromStyle(
-                  contentsAlign: ContentsAlign.reverse,
-                  oppositeContentsBuilder: (context, index) => Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${controller.listEvent[index]?.title}',
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 15),
-                            maxLines: 1,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: controller.listEvent
+                    .map<Widget>((element) => TimelineTile(
+                          alignment: TimelineAlign.manual,
+                          lineXY: 0.3,
+                          beforeLineStyle:
+                              const LineStyle(color: Colors.grey, thickness: 1),
+                          indicatorStyle: const IndicatorStyle(
+                            width: 10,
+                            // color: Colors.grey.withOpacity(.2),
+                            // indicatorXY: .5,
                           ),
-                        ),
-                        Text('${controller.listEvent[index]?.hour}'),
-                      ],
-                    ),
-                  ),
-                  contentsBuilder: (context, index) => Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('${controller.listEvent[index]?.day}'
-                          .substring(0, 10)),
-                    ),
-                  ),
-                  connectorStyleBuilder: (context, index) =>
-                      ConnectorStyle.solidLine,
-                  indicatorStyleBuilder: (context, index) =>
-                      IndicatorStyle.outlined,
-                  itemCount: controller.listEvent.length,
-                ),
+                          endChild: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '${element?.title}',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          color: Colors.black, fontSize: 15),
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                  Text('${element?.hour}'),
+                                ],
+                              ),
+                            ),
+                          ),
+                          startChild: Align(
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${element?.day}'.substring(0, 10),
+                                ),
+                                Text(
+                                  getWeekday(DateFormat('dd/MM/yyyy')
+                                          .parse(element!.day)
+                                          .weekday +
+                                      1),
+                                  style: Theme.of(context).textTheme.subtitle2,
+                                )
+                              ],
+                            ),
+                          ),
+                        ))
+                    .toList(),
               ),
             ],
           ),
@@ -156,33 +176,33 @@ class _TimeLineState extends State<TimeLine> {
                     ),
                     TextButton(
                       child: const Text("Ok"),
-                      onPressed: () {
+                      onPressed: () async {
                         Models models = Models(
                             title: controller.eventController.value.text,
                             hour: controller.startTime.value,
-                            day: format
-                                .format(controller.date.value));
+                            day: format.format(controller.date.value));
                         controller.listEvent.add(models);
 
                         if (selectedModels
                             .containsKey(format.format(selectedDay))) {
                           selectedModels.update(format.format(selectedDay),
-                                  (value) => value..add(models));
+                              (value) => value..add(models));
                         } else {
                           selectedModels.putIfAbsent(
-                              format.format(selectedDay),
-                                  () => [
-                                models,
-                              ]);
+                              format.format(selectedDay), () => [models]);
                         }
-                        m.save(models);
-                        Get.back();
-                        controller.eventController.value.clear();
-                        controller.startTime.value;
 
-                        if(widget.onChanged != null) widget.onChanged!(selectedModels);
+                        EasyLoading.show();
+                        await m.save(models);
+                        EasyLoading.dismiss();
+
+                        if (widget.onChanged != null) {
+                          widget.onChanged!(selectedModels);
+                        }
+                        controller.update();
+                        Get.back(result: selectedModels);
+                        controller.eventController.value.clear();
                         setState(() {});
-                        return;
                       },
                     ),
                   ],
@@ -192,6 +212,15 @@ class _TimeLineState extends State<TimeLine> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
+  }
+
+  String getWeekday(int weekday) {
+    switch (weekday) {
+      case 8:
+        return 'Chủ nhật';
+      default:
+        return 'Thứ $weekday';
+    }
   }
 
   getTime({required bool isStartTime}) async {

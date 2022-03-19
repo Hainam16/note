@@ -7,7 +7,7 @@ class MyButton extends StatelessWidget {
     required this.color,
   }) : super(key: key);
 
-  final String label;
+  final dynamic label;
   final Function() onTap;
   final Color? color;
 
@@ -23,7 +23,7 @@ class MyButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           color: color,
         ),
-        child: Text(
+        child: label is Widget ? label :Text(
           label,
           style: const TextStyle(
             color: Colors.white,

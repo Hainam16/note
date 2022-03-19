@@ -5,15 +5,18 @@ import 'package:note/model/models.dart';
 import 'local_database.dart';
 
 class ModelsStore {
-  static const String storeName = "note6";
+  static const String storeName = "note7";
 
   final _store = intMapStoreFactory.store(storeName);
+
   Future<Database> get _db async => await LocalDatabase.instance.database;
 
-  save(Models entity) async {
-    debugPrint("SAVING $entity");
+  Future<dynamic> save(Models entity) async {
+    List<Models> vals = [];
+    debugPrint("SAVING ${entity.id} ------ ${entity.key}");
     await _store.add(await _db, entity.toJson());
-    debugPrint("okkkkkkkkk $entity");
+    vals = await findAll();
+    return vals;
   }
 
   update(Models entity) async {
@@ -22,11 +25,13 @@ class ModelsStore {
     await _store.update(await _db, entity.toJson(), finder: finder);
   }
 
-  // delete(Models entity) async {
-  //   debugPrint("DELETING $entity");
-  //   final finder = Finder(filter: Filter.byKey(entity.key));
-  //   await _store.delete(await _db, finder: finder);
-  // }
+  delete(Models entity) async {
+    debugPrint("DELETING ${entity.key}");
+    final finder = Finder(filter: Filter.byKey(entity.key));
+    var dbs = await _db;
+    await _store.delete(dbs, finder: finder);
+    debugPrint("DELETINGSuccess");
+  }
 
   Future<Stream<List<Models>>> stream() async {
     debugPrint("Geting Data Stream");
@@ -36,10 +41,7 @@ class ModelsStore {
       handleData: _streamTransformerHandlerData,
     );
 
-    return _store
-        .query()
-        .onSnapshots(await _db)
-        .transform(streamTransformer);
+    return _store.query().onSnapshots(await _db).transform(streamTransformer);
   }
 
   Future<List<Models>> findAll() async {
@@ -49,7 +51,6 @@ class ModelsStore {
     }).toList();
   }
 
-
   _streamTransformerHandlerData(
       List<RecordSnapshot<int, Map<String, dynamic>>> snapshotList,
       EventSink<List<Models>> sink) {
@@ -57,6 +58,7 @@ class ModelsStore {
     for (var element in snapshotList) {
       resultSet.add(Models.fromDatabase(element));
     }
+
     sink.add(resultSet);
   }
 }

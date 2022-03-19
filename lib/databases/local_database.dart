@@ -18,7 +18,6 @@ class LocalDatabase {
   LocalDatabase._();
 
   Future<Database> get database async {
-
       _dbOpenCompleter = Completer();
       _openDatabase();
       return _dbOpenCompleter.future;
