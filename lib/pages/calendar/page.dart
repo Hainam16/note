@@ -2,8 +2,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:note/import.dart';
 import 'package:note/pages/controller.dart';
-import '../timeline.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:note/pages/timeline/timeline.dart';
 
 enum TypeCalendar { calendar, timeline }
 
@@ -50,7 +50,10 @@ class _CalendarPageState extends State<CalendarPage> {
                   children: [
                     const SizedBox(height: 20),
                     MyButton(
-                      label: const Text('Timeline',style: TextStyle(color: Colors.white),),
+                      label: const Text(
+                        'Timeline',
+                        style: TextStyle(color: Colors.white),
+                      ),
                       onTap: () async {
                         await Get.to(TimeLine(
                           onChanged: (val) {
@@ -59,7 +62,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                 controller.selectedModels
                                     .update(k, (value) => [...value, ...v]);
                               } else {
-                                controller.selectedModels.putIfAbsent(k, () => v);
+                                controller.selectedModels
+                                    .putIfAbsent(k, () => v);
                               }
                             });
                             controller.update();
@@ -135,15 +139,13 @@ class _CalendarPageState extends State<CalendarPage> {
                                             context: context,
                                             builder: (context) => AlertDialog(
                                                   title: const Align(
-                                                      child:
-                                                          Text('Xóa ghi chú')),
+                                                      child: Text('Xóa ghi chú')),
                                                   actions: [
                                                     TextButton(
                                                         onPressed: () {
                                                           Get.back();
                                                         },
-                                                        child: const Text(
-                                                            'Cancle')),
+                                                        child: const Text('Cancel')),
                                                     TextButton(
                                                       child: const Text('Ok'),
                                                       onPressed: () async {
@@ -164,15 +166,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                                         await controller.mod
                                                             .delete(model);
                                                         EasyLoading.dismiss();
-                                                        EasyLoading.showToast(
-                                                            'Xóa thành công',
-                                                            toastPosition:
-                                                                EasyLoadingToastPosition
-                                                                    .bottom);
-                                                        Navigator.of(context,
-                                                                rootNavigator:
-                                                                    true)
-                                                            .pop();
+                                                        EasyLoading.showToast('Xóa thành công',
+                                                            toastPosition: EasyLoadingToastPosition.bottom);
+                                                        Navigator.of(context, rootNavigator: true).pop();
                                                         setState(() {});
                                                       },
                                                     )
@@ -189,7 +185,24 @@ class _CalendarPageState extends State<CalendarPage> {
                                     color: Colors.grey.withOpacity(.15),
                                   ),
                                   child: ListTile(
-                                    onTap: () async {},
+                                    onTap: ()=> showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title:const Text('Chi tiết'),
+                                          content:Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SingleChildScrollView(
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                        child: Text(model.title),)
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        )),
                                     title: Container(
                                       padding: const EdgeInsets.only(
                                           left: 20, right: 20),
@@ -296,30 +309,33 @@ class _CalendarPageState extends State<CalendarPage> {
               TextButton(
                 child: const Text("Ok"),
                 onPressed: () async {
-                  Models models = Models(
-                    key: key,
-                    title: controller.eventController.value.text,
-                    hour: controller.startTime.value,
-                    day: format.format(controller.focusedDayController.value),
-                  );
-                  controller.listEvent.add(models);
-                  List<Models> result = [];
-                  if (key != null) {
-                    await controller.mod.update(models);
-                    result = await controller.mod.findAll();
-                    EasyLoading.showSuccess('Chỉnh sửa thành công');
+                  if (controller.eventController.value.text.isEmpty) {
                   } else {
-                    result = await controller.mod.save(models);
-                    EasyLoading.showSuccess('Thêm mới thành công');
-                  }
-                  controller.selectedModels = {};
-                  for (var element in result) {
-                    if (controller.selectedModels.containsKey(element.day)) {
-                      controller.selectedModels
-                          .update(element.day, (value) => value..add(element));
+                    Models models = Models(
+                      key: key,
+                      title: controller.eventController.value.text,
+                      hour: controller.startTime.value,
+                      day: format.format(controller.focusedDayController.value),
+                    );
+                    controller.listEvent.add(models);
+                    List<Models> result = [];
+                    if (key != null) {
+                      await controller.mod.update(models);
+                      result = await controller.mod.findAll();
+                      EasyLoading.showSuccess('Chỉnh sửa thành công');
                     } else {
-                      controller.selectedModels
-                          .putIfAbsent(element.day, () => [element]);
+                      result = await controller.mod.save(models);
+                      EasyLoading.showSuccess('Thêm mới thành công');
+                    }
+                    controller.selectedModels = {};
+                    for (var element in result) {
+                      if (controller.selectedModels.containsKey(element.day)) {
+                        controller.selectedModels.update(
+                            element.day, (value) => value..add(element));
+                      } else {
+                        controller.selectedModels
+                            .putIfAbsent(element.day, () => [element]);
+                      }
                     }
                   }
 

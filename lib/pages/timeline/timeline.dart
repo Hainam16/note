@@ -120,7 +120,7 @@ class _TimeLineState extends State<TimeLine> {
           onPressed: () => showDialog(
             context: context,
             builder: (context) => Obx(() => AlertDialog(
-                  title: const Align(child: Text("Add Event")),
+                  title: const Align(child: Text('Thêm ghi chú')),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -134,7 +134,7 @@ class _TimeLineState extends State<TimeLine> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Start Time'),
+                          const Text('Nhập giờ'),
                           Text(controller.startTime.value),
                           IconButton(
                             onPressed: () {
@@ -171,33 +171,36 @@ class _TimeLineState extends State<TimeLine> {
                   ),
                   actions: [
                     TextButton(
-                      child: const Text("Cancel"),
+                      child: const Text('Cancel'),
                       onPressed: () => Get.back(),
                     ),
                     TextButton(
                       child: const Text("Ok"),
                       onPressed: () async {
-                        Models models = Models(
-                            title: controller.eventController.value.text,
-                            hour: controller.startTime.value,
-                            day: format.format(controller.date.value));
-                        controller.listEvent.add(models);
-
-                        if (selectedModels
-                            .containsKey(format.format(selectedDay))) {
-                          selectedModels.update(format.format(selectedDay),
-                              (value) => value..add(models));
+                        if (controller.eventController.value.text.isEmpty) {
                         } else {
-                          selectedModels.putIfAbsent(
-                              format.format(selectedDay), () => [models]);
-                        }
+                          Models models = Models(
+                              title: controller.eventController.value.text,
+                              hour: controller.startTime.value,
+                              day: format.format(controller.date.value));
+                          controller.listEvent.add(models);
 
-                        EasyLoading.show();
-                        await m.save(models);
-                        EasyLoading.dismiss();
+                          if (selectedModels
+                              .containsKey(format.format(selectedDay))) {
+                            selectedModels.update(format.format(selectedDay),
+                                (value) => value..add(models));
+                          } else {
+                            selectedModels.putIfAbsent(
+                                format.format(selectedDay), () => [models]);
+                          }
 
-                        if (widget.onChanged != null) {
-                          widget.onChanged!(selectedModels);
+                          EasyLoading.show();
+                          await m.save(models);
+                          EasyLoading.dismiss();
+
+                          if (widget.onChanged != null) {
+                            widget.onChanged!(selectedModels);
+                          }
                         }
                         controller.update();
                         Get.back(result: selectedModels);
