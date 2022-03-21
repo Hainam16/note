@@ -99,10 +99,7 @@ class _TimeLineState extends State<TimeLine> {
                                   '${element?.day}'.substring(0, 10),
                                 ),
                                 Text(
-                                  getWeekday(DateFormat('dd/MM/yyyy')
-                                          .parse(element!.day)
-                                          .weekday +
-                                      1),
+                                  getWeekday(DateFormat('dd/MM/yyyy').parse(element!.day).weekday + 1),
                                   style: Theme.of(context).textTheme.subtitle2,
                                 )
                               ],

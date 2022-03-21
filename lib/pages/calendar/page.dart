@@ -188,7 +188,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                     onTap: ()=> showDialog(
                                         context: context,
                                         builder: (context) => AlertDialog(
-                                          title:const Text('Chi tiết'),
+                                          title:const Align(child:Text('Chi tiết')),
                                           content:Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -196,7 +196,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                                 child: Row(
                                                   children: [
                                                     Expanded(
-                                                        child: Text(model.title),)
+                                                        child: Text(model.title,
+                                                        textAlign: TextAlign.center),)
                                                   ],
                                                 ),
                                               )
