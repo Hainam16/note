@@ -71,14 +71,13 @@ class _TimeLineState extends State<TimeLine> {
                                 context: context,
                                 builder: (context) => AlertDialog(
                                     title: const Align(child: Text('Chi tiết')),
-                                    content: Column(
+                                    content: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        SingleChildScrollView(
-                                            child: Expanded(
+                                        Expanded(
                                           child: Text('${element?.title}',
                                               textAlign: TextAlign.center),
-                                        ))
+                                        )
                                       ],
                                     ))),
                             title: Card(
