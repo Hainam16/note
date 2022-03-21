@@ -68,25 +68,39 @@ class _TimeLineState extends State<TimeLine> {
                               const LineStyle(color: Colors.grey, thickness: 1),
                           indicatorStyle: const IndicatorStyle(
                             width: 10,
-                            // color: Colors.grey.withOpacity(.2),
-                            // indicatorXY: .5,
                           ),
-                          endChild: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      '${element?.title}',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          color: Colors.black, fontSize: 15),
-                                      maxLines: 1,
+                          endChild: ListTile(
+                            onTap: () => showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                    title: const Align(child: Text('Chi tiết')),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SingleChildScrollView(
+                                            child: Expanded(
+                                          child: Text('${element?.title}',
+                                              textAlign: TextAlign.center),
+                                        ))
+                                      ],
+                                    ))),
+                            title: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        '${element?.title}',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                            color: Colors.black, fontSize: 15),
+                                        maxLines: 1,
+                                      ),
                                     ),
-                                  ),
-                                  Text('${element?.hour}'),
-                                ],
+                                    Text('${element?.hour}'),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -99,7 +113,10 @@ class _TimeLineState extends State<TimeLine> {
                                   '${element?.day}'.substring(0, 10),
                                 ),
                                 Text(
-                                  getWeekday(DateFormat('dd/MM/yyyy').parse(element!.day).weekday + 1),
+                                  getWeekday(DateFormat('dd/MM/yyyy')
+                                          .parse(element!.day)
+                                          .weekday +
+                                      1),
                                   style: Theme.of(context).textTheme.subtitle2,
                                 )
                               ],
@@ -198,6 +215,7 @@ class _TimeLineState extends State<TimeLine> {
                           if (widget.onChanged != null) {
                             widget.onChanged!(selectedModels);
                           }
+                          EasyLoading.showSuccess('Thêm mới thành công');
                         }
                         controller.update();
                         Get.back(result: selectedModels);

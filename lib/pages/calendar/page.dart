@@ -193,13 +193,10 @@ class _CalendarPageState extends State<CalendarPage> {
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               SingleChildScrollView(
-                                                child: Row(
-                                                  children: [
+                                                child:
                                                     Expanded(
                                                         child: Text(model.title,
                                                         textAlign: TextAlign.center),)
-                                                  ],
-                                                ),
                                               )
                                             ],
                                           )
