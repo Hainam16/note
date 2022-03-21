@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:note/model/models.dart';
 import 'package:note/pages/calendar/page.dart';
 
-void main() {
+import 'databases/models_store.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-  return runApp(const MyApp());
+  final ModelsStore model = ModelsStore();
+  final res = await model.findAll();
+  return runApp(MyApp(items: res));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final List<Models> items;
+  const MyApp({Key? key,required this.items}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const CalendarPage(),
+      home: CalendarPage(items: items),
       builder: EasyLoading.init(),
     );
   }

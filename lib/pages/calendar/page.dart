@@ -5,7 +5,9 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 enum TypeCalendar { calendar, timeline }
 
 class CalendarPage extends StatefulWidget {
-  const CalendarPage({Key? key}) : super(key: key);
+  final List<Models> items;
+
+  const CalendarPage({Key? key, required this.items}) : super(key: key);
 
   @override
   _CalendarPageState createState() => _CalendarPageState();
@@ -37,7 +39,7 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<Controller>(
-        init: Controller(),
+        init: Controller(widget.items.isNotEmpty ? widget.items : []),
         builder: (controller) {
           return SafeArea(
             child: Scaffold(
@@ -55,9 +57,11 @@ class _CalendarPageState extends State<CalendarPage> {
                           onChanged: (val) {
                             val.forEach((k, v) {
                               if (controller.selectedModels.containsKey(k)) {
-                                controller.selectedModels.update(k, (value) => [...value, ...v]);
+                                controller.selectedModels
+                                    .update(k, (value) => [...value, ...v]);
                               } else {
-                                controller.selectedModels.putIfAbsent(k, () => v);
+                                controller.selectedModels
+                                    .putIfAbsent(k, () => v);
                               }
                             });
                             controller.update();
@@ -133,27 +137,44 @@ class _CalendarPageState extends State<CalendarPage> {
                                             context: context,
                                             builder: (context) => AlertDialog(
                                                   title: const Align(
-                                                      child: Text('Xóa ghi chú')),
+                                                      child:
+                                                          Text('Xóa ghi chú')),
                                                   actions: [
                                                     TextButton(
                                                         onPressed: () {
                                                           Get.back();
                                                         },
-                                                        child: const Text('Cancel')),
+                                                        child: const Text(
+                                                            'Cancel')),
                                                     TextButton(
                                                       child: const Text('Ok'),
                                                       onPressed: () async {
-                                                        if (controller.selectedModels.containsKey(
-                                                                format.format(selectedDay))) {
-                                                          controller.selectedModels[format.format(selectedDay)]?.remove(model);
+                                                        if (controller
+                                                            .selectedModels
+                                                            .containsKey(
+                                                                format.format(
+                                                                    selectedDay))) {
+                                                          controller
+                                                              .selectedModels[
+                                                                  format.format(
+                                                                      selectedDay)]
+                                                              ?.remove(model);
                                                         }
                                                         EasyLoading.show();
-                                                        await Future.delayed(400.milliseconds);
-                                                        await controller.mod.delete(model);
+                                                        await Future.delayed(
+                                                            400.milliseconds);
+                                                        await controller.mod
+                                                            .delete(model);
                                                         EasyLoading.dismiss();
-                                                        EasyLoading.showToast('Xóa thành công',
-                                                            toastPosition: EasyLoadingToastPosition.bottom);
-                                                        Navigator.of(context, rootNavigator: true).pop();
+                                                        EasyLoading.showToast(
+                                                            'Xóa thành công',
+                                                            toastPosition:
+                                                                EasyLoadingToastPosition
+                                                                    .bottom);
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pop();
                                                         setState(() {});
                                                       },
                                                     )
@@ -170,34 +191,51 @@ class _CalendarPageState extends State<CalendarPage> {
                                     color: Colors.grey.withOpacity(.15),
                                   ),
                                   child: ListTile(
-                                    onTap: ()=> showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                          title:const Align(child:Text('Chi tiết')),
-                                          content:Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text('Ghi chú: ${model.title}',
-                                                    textAlign: TextAlign.center),
-                                              const SizedBox(height: 20),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Thời gian: ${model.hour}',
-                                                  textAlign: TextAlign.center,),
-                                                  const SizedBox(width: 30),
-                                                  Text('Ngày: ${model.day}',
-                                                  textAlign: TextAlign.center,),
-                                                ],
-                                              )
-                                            ],
-                                          )
-                                        )),
+                                    onTap: () => showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Get.back();
+                                              },
+                                              child: const Text('Đóng')),
+                                        ],
+                                        title: const Align(
+                                            child: Text('Chi tiết')),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          children: [
+                                            Text('Ghi chú: ${model.title}',
+                                                textAlign: TextAlign.center),
+                                            const SizedBox(height: 20),
+                                            Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(Icons.access_time),
+                                                const SizedBox(width: 10),
+                                                Flexible(
+                                                  child: Text(
+                                                    model.day +
+                                                        ' ' +
+                                                        model.hour,
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                     title: Container(
                                       padding: const EdgeInsets.only(
                                           left: 20, right: 20),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
                                             child: Text(
@@ -223,7 +261,8 @@ class _CalendarPageState extends State<CalendarPage> {
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.pink,
                 child: const Icon(Icons.add),
-                onPressed: () => _editForm(model: Models(title: '', hour: '', day: '')),
+                onPressed: () =>
+                    _editForm(model: Models(title: '', hour: '', day: '')),
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerFloat,
@@ -248,7 +287,8 @@ class _CalendarPageState extends State<CalendarPage> {
     _time = model.day + ' ' + hour;
 
     controller.eventController.value.text = title;
-    controller.startTime.value = model.hour.trim().isNotEmpty ? model.hour
+    controller.startTime.value = model.hour.trim().isNotEmpty
+        ? model.hour
         : DateFormat('HH:mm a').format(DateTime.now());
     return showDialog(
       context: context,

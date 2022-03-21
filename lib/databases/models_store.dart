@@ -13,7 +13,6 @@ class ModelsStore {
 
   Future<dynamic> save(Models entity) async {
     List<Models> vals = [];
-    debugPrint("SAVING ${entity.id} ------ ${entity.key}");
     await _store.add(await _db, entity.toJson());
     vals = await findAll();
     return vals;
@@ -45,6 +44,7 @@ class ModelsStore {
   }
 
   Future<List<Models>> findAll() async {
+    print('Future..........');
     final snapshot = await _store.find(await _db);
     return snapshot.map((e) {
       return Models.fromDatabase(e);
