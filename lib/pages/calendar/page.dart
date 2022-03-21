@@ -174,11 +174,22 @@ class _CalendarPageState extends State<CalendarPage> {
                                         context: context,
                                         builder: (context) => AlertDialog(
                                           title:const Align(child:Text('Chi tiết')),
-                                          content:Row(
+                                          content:Column(
                                             mainAxisSize: MainAxisSize.min,
-                                            children: [Expanded(
-                                                        child: Text(model.title,
-                                                        textAlign: TextAlign.center),)
+                                            children: [
+                                              Text('Ghi chú: ${model.title}',
+                                                    textAlign: TextAlign.center),
+                                              const SizedBox(height: 20),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text('Thời gian: ${model.hour}',
+                                                  textAlign: TextAlign.center,),
+                                                  const SizedBox(width: 30),
+                                                  Text('Ngày: ${model.day}',
+                                                  textAlign: TextAlign.center,),
+                                                ],
+                                              )
                                             ],
                                           )
                                         )),
@@ -227,7 +238,6 @@ class _CalendarPageState extends State<CalendarPage> {
     String title = model.title;
     int? key = model.key;
 
-    // var t = model.day + model!.hour;
     String hour = model.hour;
     RegExp regExp = RegExp(r'[(AP)M]');
     if (regExp.hasMatch(hour)) {
@@ -238,8 +248,7 @@ class _CalendarPageState extends State<CalendarPage> {
     _time = model.day + ' ' + hour;
 
     controller.eventController.value.text = title;
-    controller.startTime.value = model.hour.trim().isNotEmpty
-        ? model.hour
+    controller.startTime.value = model.hour.trim().isNotEmpty ? model.hour
         : DateFormat('HH:mm a').format(DateTime.now());
     return showDialog(
       context: context,

@@ -71,12 +71,20 @@ class _TimeLineState extends State<TimeLine> {
                                 context: context,
                                 builder: (context) => AlertDialog(
                                     title: const Align(child: Text('Chi tiết')),
-                                    content: Row(
+                                    content: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Expanded(
-                                          child: Text('${element?.title}',
+                                        Text('Ghi chú: ${element?.title}',
                                               textAlign: TextAlign.center),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text('Thời gian: ${element?.hour}',
+                                              textAlign: TextAlign.center,),
+                                            const SizedBox(width: 30),
+                                            Text('Ngày: ${element?.day}',
+                                              textAlign: TextAlign.center,),
+                                          ],
                                         )
                                       ],
                                     ))),
