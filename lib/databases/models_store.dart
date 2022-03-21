@@ -44,7 +44,6 @@ class ModelsStore {
   }
 
   Future<List<Models>> findAll() async {
-    print('Future..........');
     final snapshot = await _store.find(await _db);
     return snapshot.map((e) {
       return Models.fromDatabase(e);
