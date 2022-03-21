@@ -6,7 +6,7 @@ enum TypeCalendar { calendar, timeline }
 
 class Controller extends GetxController {
   final eventController = TextEditingController().obs;
-  RxString startTime = DateFormat('HH:mm').format(DateTime.now()).obs;
+  RxString startTime = DateFormat('HH:mm a').format(DateTime.now()).obs;
   final date = DateTime.now().obs;
   final focusedDayController = DateTime.now().obs;
   RxList<Models?> listEvent = <Models>[].obs;

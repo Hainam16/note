@@ -1,9 +1,6 @@
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:note/import.dart';
-import 'package:note/pages/controller.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:note/pages/timeline/timeline.dart';
 
 enum TypeCalendar { calendar, timeline }
 
@@ -34,7 +31,6 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   void didUpdateWidget(covariant CalendarPage oldWidget) {
-    // getAll();
     super.didUpdateWidget(oldWidget);
   }
 
@@ -59,11 +55,9 @@ class _CalendarPageState extends State<CalendarPage> {
                           onChanged: (val) {
                             val.forEach((k, v) {
                               if (controller.selectedModels.containsKey(k)) {
-                                controller.selectedModels
-                                    .update(k, (value) => [...value, ...v]);
+                                controller.selectedModels.update(k, (value) => [...value, ...v]);
                               } else {
-                                controller.selectedModels
-                                    .putIfAbsent(k, () => v);
+                                controller.selectedModels.putIfAbsent(k, () => v);
                               }
                             });
                             controller.update();
@@ -149,22 +143,13 @@ class _CalendarPageState extends State<CalendarPage> {
                                                     TextButton(
                                                       child: const Text('Ok'),
                                                       onPressed: () async {
-                                                        if (controller
-                                                            .selectedModels
-                                                            .containsKey(
-                                                                format.format(
-                                                                    selectedDay))) {
-                                                          controller
-                                                              .selectedModels[
-                                                                  format.format(
-                                                                      selectedDay)]
-                                                              ?.remove(model);
+                                                        if (controller.selectedModels.containsKey(
+                                                                format.format(selectedDay))) {
+                                                          controller.selectedModels[format.format(selectedDay)]?.remove(model);
                                                         }
                                                         EasyLoading.show();
-                                                        await Future.delayed(
-                                                            400.milliseconds);
-                                                        await controller.mod
-                                                            .delete(model);
+                                                        await Future.delayed(400.milliseconds);
+                                                        await controller.mod.delete(model);
                                                         EasyLoading.dismiss();
                                                         EasyLoading.showToast('Xóa thành công',
                                                             toastPosition: EasyLoadingToastPosition.bottom);
@@ -227,8 +212,7 @@ class _CalendarPageState extends State<CalendarPage> {
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.pink,
                 child: const Icon(Icons.add),
-                onPressed: () =>
-                    _editForm(model: Models(title: '', hour: '', day: '')),
+                onPressed: () => _editForm(model: Models(title: '', hour: '', day: '')),
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerFloat,

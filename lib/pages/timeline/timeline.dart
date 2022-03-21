@@ -1,9 +1,6 @@
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:note/databases/models_store.dart';
 import 'package:note/import.dart';
-import 'package:note/pages/controller.dart';
-import 'package:timeline_tile/timeline_tile.dart';
 
 class TimeLine extends StatefulWidget {
   final ValueChanged? onChanged;
@@ -18,7 +15,7 @@ class _TimeLineState extends State<TimeLine> {
   var format = DateFormat('dd/MM/yyyy');
   late Map<String, List<Models>> selectedModels;
   DateTime selectedDay = DateTime.now();
-  Controller controller = Get.put(Controller());
+  final controller = Get.find<Controller>();
   final ModelsStore m = ModelsStore();
 
   @override
