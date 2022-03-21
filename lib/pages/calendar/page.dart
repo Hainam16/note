@@ -189,15 +189,11 @@ class _CalendarPageState extends State<CalendarPage> {
                                         context: context,
                                         builder: (context) => AlertDialog(
                                           title:const Align(child:Text('Chi tiết')),
-                                          content:Column(
+                                          content:Row(
                                             mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              SingleChildScrollView(
-                                                child:
-                                                    Expanded(
+                                            children: [Expanded(
                                                         child: Text(model.title,
                                                         textAlign: TextAlign.center),)
-                                              )
                                             ],
                                           )
                                         )),
@@ -205,8 +201,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                       padding: const EdgeInsets.only(
                                           left: 20, right: 20),
                                       child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
                                             child: Text(

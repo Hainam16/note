@@ -57,7 +57,7 @@ class _TimeLineState extends State<TimeLine> {
                 },
                 color: Colors.blueAccent,
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: controller.listEvent
@@ -125,6 +125,7 @@ class _TimeLineState extends State<TimeLine> {
                         ))
                     .toList(),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -231,7 +232,6 @@ class _TimeLineState extends State<TimeLine> {
       ),
     );
   }
-
   String getWeekday(int weekday) {
     switch (weekday) {
       case 8:
