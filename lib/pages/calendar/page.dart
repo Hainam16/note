@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:note/import.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:note/time_say.dart';
 
 enum TypeCalendar { calendar, timeline }
 
@@ -16,7 +17,6 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   DateTime selectedDay = DateTime.now();
   late ValueNotifier<TypeCalendar> switchTimelime;
-
   var format = DateFormat('dd/MM/yyyy');
 
   @override
@@ -45,37 +45,44 @@ class _CalendarPageState extends State<CalendarPage> {
             child: Scaffold(
               body: SingleChildScrollView(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    MyButton(
-                      label: const Text(
-                        'Timeline',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: () async {
-                        await Get.to(TimeLine(
-                          onChanged: (val) {
-                            val.forEach((k, v) {
-                              if (controller.selectedModels.containsKey(k)) {
-                                controller.selectedModels
-                                    .update(k, (value) => [...value, ...v]);
-                              } else {
-                                controller.selectedModels
-                                    .putIfAbsent(k, () => v);
-                              }
-                            });
-                            controller.update();
-                          },
-                        ));
-                        controller.update();
-                        setState(() {});
-                      },
-                      color: Colors.blueAccent,
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.drag_handle_outlined,
+                            color: Colors.grey,
+                            size: 35,
+                          ),
+                        onPressed: ()async {
+                          await Get.to(TimeLine(
+                            onChanged: (val) {
+                              val.forEach((k, v) {
+                                if (controller.selectedModels.containsKey(k)) {
+                                  controller.selectedModels
+                                      .update(k, (value) => [...value, ...v]);
+                                } else {
+                                  controller.selectedModels
+                                      .putIfAbsent(k, () => v);
+                                }
+                              });
+                              controller.update();
+                            },
+                          ));
+                          controller.update();
+                          setState(() {});
+                        },
+                        ),
+                        const Timecall(),
+                      ],
                     ),
                     TableCalendar(
                       focusedDay: selectedDay,
                       firstDay: DateTime(2015),
                       lastDay: DateTime(2050),
+                      locale: 'vi_VN',
                       calendarFormat: controller.format.value,
                       onFormatChanged: (CalendarFormat _format) {},
                       startingDayOfWeek: StartingDayOfWeek.sunday,
@@ -103,11 +110,15 @@ class _CalendarPageState extends State<CalendarPage> {
                           shape: BoxShape.circle,
                         ),
                       ),
-                      headerStyle: const HeaderStyle(
-                        formatButtonVisible: false,
-                        titleCentered: true,
-                        formatButtonShowsNext: false,
-                      ),
+                      headerStyle: HeaderStyle(
+                          formatButtonVisible: false,
+                          titleCentered: true,
+                          formatButtonShowsNext: false,
+                          titleTextFormatter: (date, style) {
+                            return DateFormat.yMMMM('vi_VN')
+                                .format(date)
+                                .toUpperCase();
+                          }),
                     ),
                     const SizedBox(height: 20),
                     ...getEventsfromDay(selectedDay)
@@ -144,37 +155,24 @@ class _CalendarPageState extends State<CalendarPage> {
                                                         onPressed: () {
                                                           Get.back();
                                                         },
-                                                        child: const Text(
-                                                            'Cancel')),
+                                                        child: const Text('Cancel')),
                                                     TextButton(
                                                       child: const Text('Ok'),
                                                       onPressed: () async {
-                                                        if (controller
-                                                            .selectedModels
-                                                            .containsKey(
-                                                                format.format(
-                                                                    selectedDay))) {
-                                                          controller
-                                                              .selectedModels[
-                                                                  format.format(
-                                                                      selectedDay)]
+                                                        if (controller.selectedModels.containsKey(
+                                                                format.format(selectedDay))) {
+                                                          controller.selectedModels[format.format(selectedDay)]
                                                               ?.remove(model);
                                                         }
                                                         EasyLoading.show();
                                                         await Future.delayed(
-                                                            400.milliseconds);
+                                                            200.milliseconds);
                                                         await controller.mod
                                                             .delete(model);
                                                         EasyLoading.dismiss();
-                                                        EasyLoading.showToast(
-                                                            'Xóa thành công',
-                                                            toastPosition:
-                                                                EasyLoadingToastPosition
-                                                                    .bottom);
-                                                        Navigator.of(context,
-                                                                rootNavigator:
-                                                                    true)
-                                                            .pop();
+                                                        EasyLoading.showToast('Xóa thành công',
+                                                            toastPosition: EasyLoadingToastPosition.bottom);
+                                                        Navigator.of(context, rootNavigator: true).pop();
                                                         setState(() {});
                                                       },
                                                     )
@@ -185,10 +183,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                   ],
                                 ),
                                 child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey.withOpacity(.15),
+                                    borderRadius: BorderRadius.circular(25),
+                                    color: Colors.orangeAccent.withOpacity(.15)
                                   ),
                                   child: ListTile(
                                     onTap: () => showDialog(
@@ -208,22 +205,37 @@ class _CalendarPageState extends State<CalendarPage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.stretch,
                                           children: [
-                                            Text('Ghi chú: ${model.title}',
+                                            Text(model.title,
                                                 textAlign: TextAlign.center),
                                             const SizedBox(height: 20),
-                                            Row(
+                                            Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                const Icon(Icons.access_time),
-                                                const SizedBox(width: 10),
-                                                Flexible(
-                                                  child: Text(
-                                                    model.day +
-                                                        ' ' +
-                                                        model.hour,
-                                                    textAlign: TextAlign.center,
-                                                  ),
+                                                Row(
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.access_time,color: Colors.red,),
+                                                    const SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: Text(model.hour,
+                                                        textAlign: TextAlign.center,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
+                                                const SizedBox(height: 10),
+                                                Row(
+                                                  children: [
+                                                    const Icon(Icons.calendar_today_rounded, color: Colors.red,),
+                                                    const SizedBox(width: 10),
+                                                    Flexible(
+                                                        child: Text(
+                                                      model.day,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    )),
+                                                  ],
+                                                )
                                               ],
                                             ),
                                           ],
@@ -246,6 +258,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                           ),
                                           Text(
                                             model.hour,
+                                            style:const  TextStyle(color: Colors.black54, fontStyle: FontStyle.italic
+                                            ),
                                           )
                                         ],
                                       ),
@@ -261,8 +275,10 @@ class _CalendarPageState extends State<CalendarPage> {
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.pink,
                 child: const Icon(Icons.add),
-                onPressed: () =>
-                    _editForm(model: Models(title: '', hour: '', day: '')),
+                onPressed: () {
+                  controller.validate.value = false;
+                  _editForm(model: Models(title: '', hour: '', day: ''));
+                },
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerFloat,
@@ -293,85 +309,94 @@ class _CalendarPageState extends State<CalendarPage> {
     return showDialog(
       context: context,
       builder: (context) => Obx(() => AlertDialog(
-            title: Align(
-                child: Text('${key != null ? 'Chỉnh sửa' : 'Thêm'} ghi chú')),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
+        title: Align(
+            child: Text('${key != null ? 'Chỉnh sửa' : 'Thêm'} ghi chú')),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Obx(() => TextFormField(
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                hintText: 'Nhập ghi chú',
+                errorText: controller.validate.value
+                    ? 'Chưa nhập ghi chú!'
+                    : null,
+              ),
+              controller: controller.eventController.value,
+            )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextFormField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Nhập ghi chú',
+                const Text('chọn giờ'),
+                Text(controller.startTime.value),
+                IconButton(
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    getTimeFromUser(
+                      isStartTime: true,
+                      time: _time.isNotEmpty ? _time : null,
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.access_time_rounded,
+                    color: Colors.red,
                   ),
-                  controller: controller.eventController.value,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('chọn giờ'),
-                    Text(controller.startTime.value),
-                    IconButton(
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        getTimeFromUser(
-                          isStartTime: true,
-                          time: _time.isNotEmpty ? _time : null,
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.access_time_rounded,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
-            actions: [
-              TextButton(
-                child: const Text("Cancel"),
-                onPressed: () => Get.back(),
-              ),
-              TextButton(
-                child: const Text("Ok"),
-                onPressed: () async {
-                  if (controller.eventController.value.text.isEmpty) {
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () {
+              controller.validate.value = false;
+              Get.back();
+            },
+          ),
+          TextButton(
+            child: const Text("Ok"),
+            onPressed: () async {
+              setState(() {
+                controller.eventController.value.text.isEmpty
+                    ? controller.validate.value = true
+                    : controller.validate.value = false;
+              });
+              if (!controller.validate.value) {
+                Models models = Models(
+                  key: key,
+                  title: controller.eventController.value.text,
+                  hour: controller.startTime.value,
+                  day: format.format(controller.focusedDayController.value),
+                );
+                controller.listEvent.add(models);
+                List<Models> result = [];
+                if (key != null) {
+                  await controller.mod.update(models);
+                  result = await controller.mod.findAll();
+                  EasyLoading.showSuccess('Chỉnh sửa thành công');
+                } else {
+                  result = await controller.mod.save(models);
+                  EasyLoading.showSuccess('Thêm mới thành công');
+                }
+                controller.selectedModels = {};
+                for (var element in result) {
+                  if (controller.selectedModels.containsKey(element.day)) {
+                    controller.selectedModels.update(
+                        element.day, (value) => value..add(element));
                   } else {
-                    Models models = Models(
-                      key: key,
-                      title: controller.eventController.value.text,
-                      hour: controller.startTime.value,
-                      day: format.format(controller.focusedDayController.value),
-                    );
-                    controller.listEvent.add(models);
-                    List<Models> result = [];
-                    if (key != null) {
-                      await controller.mod.update(models);
-                      result = await controller.mod.findAll();
-                      EasyLoading.showSuccess('Chỉnh sửa thành công');
-                    } else {
-                      result = await controller.mod.save(models);
-                      EasyLoading.showSuccess('Thêm mới thành công');
-                    }
-                    controller.selectedModels = {};
-                    for (var element in result) {
-                      if (controller.selectedModels.containsKey(element.day)) {
-                        controller.selectedModels.update(
-                            element.day, (value) => value..add(element));
-                      } else {
-                        controller.selectedModels
-                            .putIfAbsent(element.day, () => [element]);
-                      }
-                    }
+                    controller.selectedModels
+                        .putIfAbsent(element.day, () => [element]);
                   }
-
-                  Get.back();
-                  controller.eventController.value.clear();
-                  setState(() {});
-                },
-              ),
-            ],
-          )),
+                }
+                Get.back();
+                controller.eventController.value.clear();
+                setState(() {});
+              }
+            },
+          ),
+        ],
+      )),
     );
   }
 

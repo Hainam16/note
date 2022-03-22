@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:note/databases/models_store.dart';
 import 'package:note/import.dart';
+import 'package:note/time_say.dart';
 
 class TimeLine extends StatefulWidget {
   final ValueChanged? onChanged;
@@ -21,7 +22,7 @@ class _TimeLineState extends State<TimeLine> {
   @override
   void initState() {
     selectedModels = {};
-    Future.delayed(700.milliseconds, () {
+    Future.delayed(300.milliseconds, () {
       m.findAll().then((value) {
         value.sort((a, b) {
           DateTime t1 = DateFormat('dd/MM/yyyy').parse(a.day);
@@ -45,14 +46,22 @@ class _TimeLineState extends State<TimeLine> {
       child: Scaffold(
         body: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              MyButton(
-                label: 'Calendar',
-                onTap: () {
-                  Get.back(result: selectedModels);
-                },
-                color: Colors.blueAccent,
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.drag_handle_outlined,
+                      color: Colors.grey,
+                      size: 35,
+                    ), onPressed: () {
+                      Get.back();
+                      },
+                  ),
+                  const Timecall(),
+                ],
               ),
               const SizedBox(height: 20),
               Column(
@@ -70,25 +79,49 @@ class _TimeLineState extends State<TimeLine> {
                             onTap: () => showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () {
+                                          Get.back();
+                                        },
+                                        child: const Text('Đóng')),
+                                  ],
                                     title: const Align(child: Text('Chi tiết')),
                                     content: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text('Ghi chú: ${element?.title}',
+                                        Text(element!.title,
                                               textAlign: TextAlign.center),
+                                        const SizedBox(height: 10),
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text('Thời gian: ${element?.hour}',
-                                              textAlign: TextAlign.center,),
-                                            const SizedBox(width: 30),
-                                            Text('Ngày: ${element?.day}',
-                                              textAlign: TextAlign.center,),
+                                            const Icon(Icons.access_time, color: Colors.red,),
+                                            const SizedBox(width: 10),
+                                            Flexible(
+                                              child: Text(element.hour,
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.calendar_today_rounded, color: Colors.red,),
+                                            const SizedBox(width: 10),
+                                            Flexible(child: Text(element.day,
+                                              textAlign: TextAlign.center,)),
                                           ],
                                         )
                                       ],
-                                    ))),
-                            title: Card(
+                                    ),
+                                ),
+                            ),
+                            title: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: Colors.orangeAccent.withOpacity(.15)
+                              ),
                               child: Padding(
                                 padding: const EdgeInsets.all(10),
                                 child: Row(
@@ -102,7 +135,8 @@ class _TimeLineState extends State<TimeLine> {
                                         maxLines: 1,
                                       ),
                                     ),
-                                    Text('${element?.hour}'),
+                                    Text('${element?.hour}',
+                                    style:const TextStyle(color: Colors.black54,fontStyle: FontStyle.italic),),
                                   ],
                                 ),
                               ),
@@ -134,7 +168,7 @@ class _TimeLineState extends State<TimeLine> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.pink,
+          backgroundColor: Colors.orange,
           child: const Icon(Icons.add),
           onPressed: () => showDialog(
             context: context,

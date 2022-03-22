@@ -20,6 +20,9 @@ class Controller extends GetxController {
 
   late ValueNotifier<TypeCalendar> switchTimelime;
 
+  var validate = false.obs;
+
+
   @override
   void onInit() {
     getAll();
