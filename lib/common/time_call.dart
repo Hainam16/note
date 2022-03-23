@@ -17,16 +17,16 @@ class _TimecallState extends State<Timecall> {
 
   String timeCall() {
     if (nowtime <= 12) {
-      text = "  Chào buổi sáng  ☀️";
+      text = "  Chào buổi sáng ☀";
     }
     if (nowtime > 12) {
-      text = "  Chào buổi chiều  🌞";
+      text = "  Chào buổi chiều 🌞";
     }
     if (nowtime >= 18) {
-      text = "  Chào buổi tối  🌆";
+      text = "  Chào buổi tối 🌆";
     }
     if (nowtime >= 22) {
-      text = "  Ngủ ngon  🌙";
+      text = "  Ngủ ngon 🌙";
     }
 
     return text;

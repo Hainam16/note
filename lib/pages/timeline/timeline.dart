@@ -54,6 +54,7 @@ class _TimeLineState extends State<TimeLine> {
             children: [
               const SizedBox(height: 20),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
                     icon: const Icon(
@@ -187,98 +188,100 @@ class _TimeLineState extends State<TimeLine> {
           child: const Icon(Icons.add),
           onPressed: () => showDialog(
             context: context,
-            builder: (context) => Obx(() => AlertDialog(
-                  title: const Align(child: Text('Thêm ghi chú')),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Nhập ghi chú',
+            builder: (context) => Obx(() => SingleChildScrollView(
+              child: AlertDialog(
+                    title: const Align(child: Text('Thêm ghi chú')),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Nhập ghi chú',
+                          ),
+                          controller: controller.eventController.value,
                         ),
-                        controller: controller.eventController.value,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Nhập giờ'),
-                          Text(controller.startTime.value),
-                          IconButton(
-                            onPressed: () {
-                              FocusScope.of(context).unfocus();
-                              getTime(isStartTime: true);
-                            },
-                            icon: const Icon(
-                              Icons.access_time_rounded,
-                              color: Colors.red,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Nhập giờ'),
+                            Text(controller.startTime.value),
+                            IconButton(
+                              onPressed: () {
+                                FocusScope.of(context).unfocus();
+                                getTime(isStartTime: true);
+                              },
+                              icon: const Icon(
+                                Icons.access_time_rounded,
+                                color: Colors.red,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Chọn ngày'),
-                          Text(
-                            controller.date.value.toString().substring(0, 10),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              FocusScope.of(context).unfocus();
-                              getDate();
-                            },
-                            icon: const Icon(
-                              Icons.calendar_today_outlined,
-                              color: Colors.red,
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Chọn ngày'),
+                            Text(
+                              controller.date.value.toString().substring(0, 10),
                             ),
-                          ),
-                        ],
+                            IconButton(
+                              onPressed: () {
+                                FocusScope.of(context).unfocus();
+                                getDate();
+                              },
+                              icon: const Icon(
+                                Icons.calendar_today_outlined,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () => Get.back(),
+                      ),
+                      TextButton(
+                        child: const Text("Ok"),
+                        onPressed: () async {
+                          if (controller.eventController.value.text.isEmpty) {
+                          } else {
+                            Models models = Models(
+                                title: controller.eventController.value.text,
+                                hour: controller.startTime.value,
+                                day: format.format(controller.date.value));
+                            controller.listEvent.add(models);
+
+                            if (selectedModels
+                                .containsKey(format.format(selectedDay))) {
+                              selectedModels.update(format.format(selectedDay),
+                                  (value) => value..add(models));
+                            } else {
+                              selectedModels.putIfAbsent(
+                                  format.format(selectedDay), () => [models]);
+                            }
+
+                            EasyLoading.show();
+                            await m.save(models);
+                            EasyLoading.dismiss();
+
+                            if (widget.onChanged != null) {
+                              widget.onChanged!(selectedModels);
+                            }
+                            EasyLoading.showSuccess('Thêm mới thành công');
+                          }
+                          controller.update();
+                          Get.back(result: selectedModels);
+                          controller.eventController.value.clear();
+                          setState(() {});
+                        },
                       ),
                     ],
                   ),
-                  actions: [
-                    TextButton(
-                      child: const Text('Cancel'),
-                      onPressed: () => Get.back(),
-                    ),
-                    TextButton(
-                      child: const Text("Ok"),
-                      onPressed: () async {
-                        if (controller.eventController.value.text.isEmpty) {
-                        } else {
-                          Models models = Models(
-                              title: controller.eventController.value.text,
-                              hour: controller.startTime.value,
-                              day: format.format(controller.date.value));
-                          controller.listEvent.add(models);
-
-                          if (selectedModels
-                              .containsKey(format.format(selectedDay))) {
-                            selectedModels.update(format.format(selectedDay),
-                                (value) => value..add(models));
-                          } else {
-                            selectedModels.putIfAbsent(
-                                format.format(selectedDay), () => [models]);
-                          }
-
-                          EasyLoading.show();
-                          await m.save(models);
-                          EasyLoading.dismiss();
-
-                          if (widget.onChanged != null) {
-                            widget.onChanged!(selectedModels);
-                          }
-                          EasyLoading.showSuccess('Thêm mới thành công');
-                        }
-                        controller.update();
-                        Get.back(result: selectedModels);
-                        controller.eventController.value.clear();
-                        setState(() {});
-                      },
-                    ),
-                  ],
-                )),
+            )),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

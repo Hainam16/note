@@ -54,6 +54,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   children: [
                     const SizedBox(height: 20),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
                           icon: const Icon(
@@ -61,24 +62,25 @@ class _CalendarPageState extends State<CalendarPage> {
                             color: Colors.grey,
                             size: 35,
                           ),
-                        onPressed: ()async {
-                          await Get.to(TimeLine(
-                            onChanged: (val) {
-                              val.forEach((k, v) {
-                                if (controller.selectedModels.containsKey(k)) {
-                                  controller.selectedModels
-                                      .update(k, (value) => [...value, ...v]);
-                                } else {
-                                  controller.selectedModels
-                                      .putIfAbsent(k, () => v);
-                                }
-                              });
-                              controller.update();
-                            },
-                          ));
-                          controller.update();
-                          setState(() {});
-                        },
+                          onPressed: () async {
+                            await Get.to(TimeLine(
+                              onChanged: (val) {
+                                val.forEach((k, v) {
+                                  if (controller.selectedModels
+                                      .containsKey(k)) {
+                                    controller.selectedModels
+                                        .update(k, (value) => [...value, ...v]);
+                                  } else {
+                                    controller.selectedModels
+                                        .putIfAbsent(k, () => v);
+                                  }
+                                });
+                                controller.update();
+                              },
+                            ));
+                            controller.update();
+                            setState(() {});
+                          },
                         ),
                         Timecall(isDark),
                         IconButton(
@@ -102,8 +104,11 @@ class _CalendarPageState extends State<CalendarPage> {
                       locale: 'vi_VN',
                       calendarFormat: controller.format.value,
                       onFormatChanged: (CalendarFormat _format) {},
-                      startingDayOfWeek: StartingDayOfWeek.sunday,
+                      startingDayOfWeek: StartingDayOfWeek.monday,
                       daysOfWeekVisible: true,
+                      daysOfWeekHeight: 50,
+                      daysOfWeekStyle:const DaysOfWeekStyle(
+                          decoration: BoxDecoration(color: Colors.white)),
                       onDaySelected: (DateTime selectDay, DateTime focusDay) {
                         setState(() {
                           selectedDay = selectDay;
@@ -115,9 +120,13 @@ class _CalendarPageState extends State<CalendarPage> {
                       },
                       eventLoader: getEventsfromDay,
                       calendarStyle: const CalendarStyle(
+                        markerDecoration: BoxDecoration(
+                          color: Colors.yellow,
+                          shape: BoxShape.circle,
+                        ),
                         isTodayHighlighted: true,
                         selectedDecoration: BoxDecoration(
-                          color: Colors.amber,
+                          color: Colors.orangeAccent,
                           shape: BoxShape.circle,
                         ),
                         selectedTextStyle: TextStyle(color: Colors.white),
@@ -144,7 +153,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                   .copyWith(left: 10, right: 10),
                               child: Slidable(
                                 endActionPane: ActionPane(
-                                  motion: const ScrollMotion(),
+                                  motion: const StretchMotion(),
                                   children: [
                                     SlidableAction(
                                       backgroundColor: Colors.green,
@@ -172,13 +181,20 @@ class _CalendarPageState extends State<CalendarPage> {
                                                         onPressed: () {
                                                           Get.back();
                                                         },
-                                                        child: const Text('Cancel')),
+                                                        child: const Text(
+                                                            'Cancel')),
                                                     TextButton(
                                                       child: const Text('Ok'),
                                                       onPressed: () async {
-                                                        if (controller.selectedModels.containsKey(
-                                                                format.format(selectedDay))) {
-                                                          controller.selectedModels[format.format(selectedDay)]
+                                                        if (controller
+                                                            .selectedModels
+                                                            .containsKey(
+                                                                format.format(
+                                                                    selectedDay))) {
+                                                          controller
+                                                              .selectedModels[
+                                                                  format.format(
+                                                                      selectedDay)]
                                                               ?.remove(model);
                                                         }
                                                         EasyLoading.show();
@@ -187,9 +203,15 @@ class _CalendarPageState extends State<CalendarPage> {
                                                         await controller.mod
                                                             .delete(model);
                                                         EasyLoading.dismiss();
-                                                        EasyLoading.showToast('Xóa thành công',
-                                                            toastPosition: EasyLoadingToastPosition.bottom);
-                                                        Navigator.of(context, rootNavigator: true).pop();
+                                                        EasyLoading.showToast(
+                                                            'Xóa thành công',
+                                                            toastPosition:
+                                                                EasyLoadingToastPosition
+                                                                    .bottom);
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pop();
                                                         setState(() {});
                                                       },
                                                     )
@@ -201,9 +223,10 @@ class _CalendarPageState extends State<CalendarPage> {
                                 ),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(25),
-                                    color: Theme.of(context).floatingActionButtonTheme.backgroundColor
-                                  ),
+                                      borderRadius: BorderRadius.circular(25),
+                                      color: Theme.of(context)
+                                          .floatingActionButtonTheme
+                                          .backgroundColor),
                                   child: ListTile(
                                     onTap: () => showDialog(
                                       context: context,
@@ -222,9 +245,10 @@ class _CalendarPageState extends State<CalendarPage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.stretch,
                                           children: [
-                                            Text(model.title,
-                                                textAlign: TextAlign.center,
-                                            // style: titleStyle,
+                                            Text(
+                                              model.title,
+                                              textAlign: TextAlign.center,
+                                              // style: titleStyle,
                                             ),
                                             const SizedBox(height: 20),
                                             Column(
@@ -233,11 +257,15 @@ class _CalendarPageState extends State<CalendarPage> {
                                                 Row(
                                                   children: [
                                                     const Icon(
-                                                        Icons.access_time,color: Colors.red,),
+                                                      Icons.access_time,
+                                                      color: Colors.red,
+                                                    ),
                                                     const SizedBox(width: 10),
                                                     Flexible(
-                                                      child: Text(model.hour,
-                                                        textAlign: TextAlign.center,
+                                                      child: Text(
+                                                        model.hour,
+                                                        textAlign:
+                                                            TextAlign.center,
                                                       ),
                                                     ),
                                                   ],
@@ -245,11 +273,17 @@ class _CalendarPageState extends State<CalendarPage> {
                                                 const SizedBox(height: 10),
                                                 Row(
                                                   children: [
-                                                    const Icon(Icons.calendar_today_rounded, color: Colors.red,),
+                                                    const Icon(
+                                                      Icons
+                                                          .calendar_today_rounded,
+                                                      color: Colors.red,
+                                                    ),
                                                     const SizedBox(width: 10),
                                                     Flexible(
-                                                        child: Text(model.day,
-                                                      textAlign: TextAlign.center,
+                                                        child: Text(
+                                                      model.day,
+                                                      textAlign:
+                                                          TextAlign.center,
                                                     )),
                                                   ],
                                                 )
@@ -276,8 +310,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                           ),
                                           Text(
                                             model.hour,
-                                            style:hourStyle,
-                                            ),
+                                            style: hourStyle,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -325,95 +359,99 @@ class _CalendarPageState extends State<CalendarPage> {
         : DateFormat('HH:mm a').format(DateTime.now());
     return showDialog(
       context: context,
-      builder: (context) => Obx(() => AlertDialog(
-        title: Align(
-            child: Text('${key != null ? 'Chỉnh sửa' : 'Thêm'} ghi chú')),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Obx(() => TextFormField(
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                hintText: 'Nhập ghi chú',
-                errorText: controller.validate.value
-                    ? 'Chưa nhập ghi chú!'
-                    : null,
-              ),
-              controller: controller.eventController.value,
-            )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('chọn giờ'),
-                Text(controller.startTime.value),
-                IconButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    getTimeFromUser(
-                      isStartTime: true,
-                      time: _time.isNotEmpty ? _time : null,
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.access_time_rounded,
-                    color: Colors.red,
+      builder: (context) => Obx(() => SingleChildScrollView(
+            child: AlertDialog(
+              title: Align(
+                  child: Text('${key != null ? 'Chỉnh sửa' : 'Thêm'} ghi chú')),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Obx(() => TextFormField(
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          hintText: 'Nhập ghi chú',
+                          errorText: controller.validate.value
+                              ? 'Chưa nhập ghi chú!'
+                              : null,
+                        ),
+                        controller: controller.eventController.value,
+                      )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('chọn giờ'),
+                      Text(controller.startTime.value),
+                      IconButton(
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          getTimeFromUser(
+                            isStartTime: true,
+                            time: _time.isNotEmpty ? _time : null,
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.access_time_rounded,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("Cancel"),
+                  onPressed: () {
+                    controller.validate.value = false;
+                    Get.back();
+                  },
+                ),
+                TextButton(
+                  child: const Text("Ok"),
+                  onPressed: () async {
+                    setState(() {
+                      controller.eventController.value.text.isEmpty
+                          ? controller.validate.value = true
+                          : controller.validate.value = false;
+                    });
+                    if (!controller.validate.value) {
+                      Models models = Models(
+                        key: key,
+                        title: controller.eventController.value.text,
+                        hour: controller.startTime.value,
+                        day: format
+                            .format(controller.focusedDayController.value),
+                      );
+                      controller.listEvent.add(models);
+                      List<Models> result = [];
+                      if (key != null) {
+                        await controller.mod.update(models);
+                        result = await controller.mod.findAll();
+                        EasyLoading.showSuccess('Chỉnh sửa thành công');
+                      } else {
+                        result = await controller.mod.save(models);
+                        EasyLoading.showSuccess('Thêm mới thành công');
+                      }
+                      controller.selectedModels = {};
+                      for (var element in result) {
+                        if (controller.selectedModels
+                            .containsKey(element.day)) {
+                          controller.selectedModels.update(
+                              element.day, (value) => value..add(element));
+                        } else {
+                          controller.selectedModels
+                              .putIfAbsent(element.day, () => [element]);
+                        }
+                      }
+                      Get.back();
+                      controller.eventController.value.clear();
+                      setState(() {});
+                    }
+                  },
                 ),
               ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            child: const Text("Cancel"),
-            onPressed: () {
-              controller.validate.value = false;
-              Get.back();
-            },
-          ),
-          TextButton(
-            child: const Text("Ok"),
-            onPressed: () async {
-              setState(() {
-                controller.eventController.value.text.isEmpty
-                    ? controller.validate.value = true
-                    : controller.validate.value = false;
-              });
-              if (!controller.validate.value) {
-                Models models = Models(
-                  key: key,
-                  title: controller.eventController.value.text,
-                  hour: controller.startTime.value,
-                  day: format.format(controller.focusedDayController.value),
-                );
-                controller.listEvent.add(models);
-                List<Models> result = [];
-                if (key != null) {
-                  await controller.mod.update(models);
-                  result = await controller.mod.findAll();
-                  EasyLoading.showSuccess('Chỉnh sửa thành công');
-                } else {
-                  result = await controller.mod.save(models);
-                  EasyLoading.showSuccess('Thêm mới thành công');
-                }
-                controller.selectedModels = {};
-                for (var element in result) {
-                  if (controller.selectedModels.containsKey(element.day)) {
-                    controller.selectedModels.update(
-                        element.day, (value) => value..add(element));
-                  } else {
-                    controller.selectedModels
-                        .putIfAbsent(element.day, () => [element]);
-                  }
-                }
-                Get.back();
-                controller.eventController.value.clear();
-                setState(() {});
-              }
-            },
-          ),
-        ],
-      )),
+          )),
     );
   }
 
