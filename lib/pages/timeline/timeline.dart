@@ -1,7 +1,9 @@
 import 'package:intl/intl.dart';
+import 'package:note/common/theme_service.dart';
 import 'package:note/databases/models_store.dart';
 import 'package:note/import.dart';
-import 'package:note/time_say.dart';
+import 'package:note/common/time_say.dart';
+import 'package:note/theme.dart';
 
 class TimeLine extends StatefulWidget {
   final ValueChanged? onChanged;
@@ -60,7 +62,19 @@ class _TimeLineState extends State<TimeLine> {
                       Get.back();
                       },
                   ),
-                  const Timecall(),
+                   const Timecall(false),
+                  IconButton(
+                    onPressed: () {
+                      ThemeServices.switchTheme();
+                    },
+                    icon: Icon(
+                      Get.isDarkMode
+                          ? Icons.wb_sunny_outlined
+                          : Icons.nightlight_round_outlined,
+                      size: 24,
+                      color: Get.isDarkMode ? Colors.white : darkGreyClr,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -69,7 +83,7 @@ class _TimeLineState extends State<TimeLine> {
                 children: controller.listEvent
                     .map<Widget>((element) => TimelineTile(
                           alignment: TimelineAlign.manual,
-                          lineXY: 0.3,
+                          lineXY: 0.25,
                           beforeLineStyle:
                               const LineStyle(color: Colors.grey, thickness: 1),
                           indicatorStyle: const IndicatorStyle(
@@ -130,13 +144,12 @@ class _TimeLineState extends State<TimeLine> {
                                       child: Text(
                                         '${element?.title}',
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                            color: Colors.black, fontSize: 15),
+                                        style: titleStyle,
                                         maxLines: 1,
                                       ),
                                     ),
                                     Text('${element?.hour}',
-                                    style:const TextStyle(color: Colors.black54,fontStyle: FontStyle.italic),),
+                                    style:hourStyle,),
                                   ],
                                 ),
                               ),

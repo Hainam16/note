@@ -1,7 +1,9 @@
 import 'package:intl/intl.dart';
+import 'package:note/common/theme_service.dart';
 import 'package:note/import.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:note/time_say.dart';
+import 'package:note/common/time_say.dart';
+import 'package:note/theme.dart';
 
 enum TypeCalendar { calendar, timeline }
 
@@ -36,8 +38,11 @@ class _CalendarPageState extends State<CalendarPage> {
     super.didUpdateWidget(oldWidget);
   }
 
+  bool isDark = false;
+
   @override
   Widget build(BuildContext context) {
+    isDark = Get.isDarkMode;
     return GetBuilder<Controller>(
         init: Controller(widget.items.isNotEmpty ? widget.items : []),
         builder: (controller) {
@@ -75,7 +80,19 @@ class _CalendarPageState extends State<CalendarPage> {
                           setState(() {});
                         },
                         ),
-                        const Timecall(),
+                        Timecall(isDark),
+                        IconButton(
+                          onPressed: () {
+                            ThemeServices.switchTheme();
+                          },
+                          icon: Icon(
+                            Get.isDarkMode
+                                ? Icons.wb_sunny_outlined
+                                : Icons.nightlight_round_outlined,
+                            size: 24,
+                            color: Get.isDarkMode ? Colors.white : darkGreyClr,
+                          ),
+                        ),
                       ],
                     ),
                     TableCalendar(
@@ -185,7 +202,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(25),
-                                    color: Colors.orangeAccent.withOpacity(.15)
+                                    color: Theme.of(context).floatingActionButtonTheme.backgroundColor
                                   ),
                                   child: ListTile(
                                     onTap: () => showDialog(
@@ -206,7 +223,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                               CrossAxisAlignment.stretch,
                                           children: [
                                             Text(model.title,
-                                                textAlign: TextAlign.center),
+                                                textAlign: TextAlign.center,
+                                            // style: titleStyle,
+                                            ),
                                             const SizedBox(height: 20),
                                             Column(
                                               mainAxisSize: MainAxisSize.min,
@@ -229,10 +248,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                                     const Icon(Icons.calendar_today_rounded, color: Colors.red,),
                                                     const SizedBox(width: 10),
                                                     Flexible(
-                                                        child: Text(
-                                                      model.day,
-                                                      textAlign:
-                                                          TextAlign.center,
+                                                        child: Text(model.day,
+                                                      textAlign: TextAlign.center,
                                                     )),
                                                   ],
                                                 )
@@ -253,14 +270,14 @@ class _CalendarPageState extends State<CalendarPage> {
                                             child: Text(
                                               model.title,
                                               overflow: TextOverflow.ellipsis,
+                                              style: titleStyle,
                                               maxLines: 1,
                                             ),
                                           ),
                                           Text(
                                             model.hour,
-                                            style:const  TextStyle(color: Colors.black54, fontStyle: FontStyle.italic
+                                            style:hourStyle,
                                             ),
-                                          )
                                         ],
                                       ),
                                     ),
