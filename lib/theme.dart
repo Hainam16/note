@@ -14,8 +14,8 @@ class Themes {
     primaryColor: primaryClr,
     backgroundColor: Colors.white,
     brightness: Brightness.light,
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: Colors.orangeAccent,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.orangeAccent.withOpacity(0.15),
       )
 
   );
@@ -23,8 +23,8 @@ class Themes {
     primaryColor: darkGreyClr,
     backgroundColor: darkGreyClr,
     brightness: Brightness.dark,
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: Colors.cyan,
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Colors.cyanAccent.withOpacity(0.7),
     )
   );
 }
@@ -37,16 +37,16 @@ TextStyle get appBarStyle {
 }
 TextStyle get titleStyle {
   return TextStyle(
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: FontWeight.w400,
       color: Get.isDarkMode ? Colors.white : Colors.black,
   );
 }
 TextStyle get hourStyle {
   return TextStyle(
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.italic,
-    color: Get.isDarkMode ? Colors.white54 : Colors.black54,
+    color: Get.isDarkMode ? Colors.white : Colors.black54,
   );
 }

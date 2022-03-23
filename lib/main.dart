@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: Themes.light,
-
       darkTheme: Themes.dark,
       themeMode: ThemeMode.system,
       home: CalendarPage(items: items),

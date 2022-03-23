@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:note/common/theme_service.dart';
 import 'package:note/databases/models_store.dart';
 import 'package:note/import.dart';
-import 'package:note/common/time_say.dart';
+import 'package:note/common/time_call.dart';
 import 'package:note/theme.dart';
 
 class TimeLine extends StatefulWidget {
@@ -134,7 +134,7 @@ class _TimeLineState extends State<TimeLine> {
                             title: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
-                                  color: Colors.orangeAccent.withOpacity(.15)
+                                  color: Theme.of(context).floatingActionButtonTheme.backgroundColor
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(10),
