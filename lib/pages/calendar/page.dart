@@ -66,13 +66,10 @@ class _CalendarPageState extends State<CalendarPage> {
                             await Get.to(TimeLine(
                               onChanged: (val) {
                                 val.forEach((k, v) {
-                                  if (controller.selectedModels
-                                      .containsKey(k)) {
-                                    controller.selectedModels
-                                        .update(k, (value) => [...value, ...v]);
+                                  if (controller.selectedModels.containsKey(k)) {
+                                    controller.selectedModels.update(k, (value) => [...value, ...v]);
                                   } else {
-                                    controller.selectedModels
-                                        .putIfAbsent(k, () => v);
+                                    controller.selectedModels.putIfAbsent(k, () => v);
                                   }
                                 });
                                 controller.update();
@@ -186,32 +183,19 @@ class _CalendarPageState extends State<CalendarPage> {
                                                     TextButton(
                                                       child: const Text('Ok'),
                                                       onPressed: () async {
-                                                        if (controller
-                                                            .selectedModels
-                                                            .containsKey(
-                                                                format.format(
-                                                                    selectedDay))) {
-                                                          controller
-                                                              .selectedModels[
-                                                                  format.format(
-                                                                      selectedDay)]
+                                                        if (controller.selectedModels.containsKey(
+                                                                format.format(selectedDay))) {
+                                                          controller.selectedModels[
+                                                                  format.format(selectedDay)]
                                                               ?.remove(model);
                                                         }
                                                         EasyLoading.show();
-                                                        await Future.delayed(
-                                                            200.milliseconds);
-                                                        await controller.mod
-                                                            .delete(model);
+                                                        await Future.delayed(200.milliseconds);
+                                                        await controller.mod.delete(model);
                                                         EasyLoading.dismiss();
-                                                        EasyLoading.showToast(
-                                                            'Xóa thành công',
-                                                            toastPosition:
-                                                                EasyLoadingToastPosition
-                                                                    .bottom);
-                                                        Navigator.of(context,
-                                                                rootNavigator:
-                                                                    true)
-                                                            .pop();
+                                                        EasyLoading.showToast('Xóa thành công',
+                                                            toastPosition: EasyLoadingToastPosition.bottom);
+                                                        Navigator.of(context, rootNavigator: true).pop();
                                                         setState(() {});
                                                       },
                                                     )
@@ -224,9 +208,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 child: Container(
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(25),
-                                      color: Theme.of(context)
-                                          .floatingActionButtonTheme
-                                          .backgroundColor),
+                                      color: Theme.of(context).floatingActionButtonTheme.backgroundColor),
                                   child: ListTile(
                                     onTap: () => showDialog(
                                       context: context,
@@ -242,8 +224,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                             child: Text('Chi tiết')),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
                                           children: [
                                             Text(
                                               model.title,
@@ -256,16 +237,13 @@ class _CalendarPageState extends State<CalendarPage> {
                                               children: [
                                                 Row(
                                                   children: [
-                                                    const Icon(
-                                                      Icons.access_time,
-                                                      color: Colors.red,
+                                                    const Icon(Icons.access_time, color: Colors.red,
                                                     ),
                                                     const SizedBox(width: 10),
                                                     Flexible(
                                                       child: Text(
                                                         model.hour,
-                                                        textAlign:
-                                                            TextAlign.center,
+                                                        textAlign: TextAlign.center,
                                                       ),
                                                     ),
                                                   ],
@@ -274,16 +252,14 @@ class _CalendarPageState extends State<CalendarPage> {
                                                 Row(
                                                   children: [
                                                     const Icon(
-                                                      Icons
-                                                          .calendar_today_rounded,
+                                                      Icons.calendar_today_rounded,
                                                       color: Colors.red,
                                                     ),
                                                     const SizedBox(width: 10),
                                                     Flexible(
                                                         child: Text(
                                                       model.day,
-                                                      textAlign:
-                                                          TextAlign.center,
+                                                      textAlign: TextAlign.center,
                                                     )),
                                                   ],
                                                 )
@@ -325,7 +301,7 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.pink,
-                child: const Icon(Icons.add),
+                child: const Icon(Icons.add, color: Colors.white,),
                 onPressed: () {
                   controller.validate.value = false;
                   _editForm(model: Models(title: '', hour: '', day: ''));
@@ -419,8 +395,7 @@ class _CalendarPageState extends State<CalendarPage> {
                         key: key,
                         title: controller.eventController.value.text,
                         hour: controller.startTime.value,
-                        day: format
-                            .format(controller.focusedDayController.value),
+                        day: format.format(controller.focusedDayController.value),
                       );
                       controller.listEvent.add(models);
                       List<Models> result = [];
@@ -434,13 +409,11 @@ class _CalendarPageState extends State<CalendarPage> {
                       }
                       controller.selectedModels = {};
                       for (var element in result) {
-                        if (controller.selectedModels
-                            .containsKey(element.day)) {
+                        if (controller.selectedModels.containsKey(element.day)) {
                           controller.selectedModels.update(
                               element.day, (value) => value..add(element));
                         } else {
-                          controller.selectedModels
-                              .putIfAbsent(element.day, () => [element]);
+                          controller.selectedModels.putIfAbsent(element.day, () => [element]);
                         }
                       }
                       Get.back();

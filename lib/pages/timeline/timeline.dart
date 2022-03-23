@@ -185,7 +185,7 @@ class _TimeLineState extends State<TimeLine> {
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.orange,
-          child: const Icon(Icons.add),
+          child: const Icon(Icons.add,color: Colors.white,),
           onPressed: () => showDialog(
             context: context,
             builder: (context) => Obx(() => SingleChildScrollView(
