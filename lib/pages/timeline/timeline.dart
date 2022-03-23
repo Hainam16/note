@@ -32,8 +32,8 @@ class _TimeLineState extends State<TimeLine> {
           return t1.compareTo(t2);
         });
         controller.listEvent.value = value;
-        setState(() {});
       });
+      setState(() {});
     });
     super.initState();
   }
@@ -222,8 +222,7 @@ class _TimeLineState extends State<TimeLine> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text('Chọn ngày'),
-                            Text(
-                              controller.date.value.toString().substring(0, 10),
+                            Text(controller.date.value.toString().substring(0, 10),
                             ),
                             IconButton(
                               onPressed: () {

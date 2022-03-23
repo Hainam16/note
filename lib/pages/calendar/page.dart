@@ -156,7 +156,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                       backgroundColor: Colors.green,
                                       foregroundColor: Colors.white,
                                       icon: Icons.edit,
-                                      label: 'Edit',
+                                      label: 'Sửa',
                                       onPressed: (BuildContext context) {
                                         _editForm(model: model);
                                       },
@@ -165,7 +165,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                       backgroundColor: const Color(0xFFFE4A49),
                                       foregroundColor: Colors.white,
                                       icon: Icons.delete,
-                                      label: 'Delete',
+                                      label: 'Xóa',
                                       onPressed: (BuildContext context) {
                                         showDialog(
                                             context: context,
