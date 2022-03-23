@@ -41,9 +41,11 @@ class _TimeLineState extends State<TimeLine> {
   List<Models> getEventsfromDay(DateTime date) {
     return selectedModels[date] ?? [];
   }
+  bool isDark = false;
 
   @override
   Widget build(BuildContext context) {
+    isDark = Get.isDarkMode;
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -62,7 +64,7 @@ class _TimeLineState extends State<TimeLine> {
                       Get.back();
                       },
                   ),
-                   const Timecall(false),
+                  Timecall(isDark),
                   IconButton(
                     onPressed: () {
                       ThemeServices.switchTheme();
