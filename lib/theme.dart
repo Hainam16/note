@@ -28,13 +28,6 @@ class Themes {
     )
   );
 }
-TextStyle get appBarStyle {
-    return TextStyle(
-      fontSize: 25,
-      fontWeight: FontWeight.bold,
-      color: Get.isDarkMode ? Colors.white : Colors.black,
-    );
-}
 TextStyle get titleStyle {
   return TextStyle(
       fontSize: 16,
