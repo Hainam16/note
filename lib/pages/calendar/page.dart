@@ -52,7 +52,6 @@ class _CalendarPageState extends State<CalendarPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -207,7 +206,6 @@ class _CalendarPageState extends State<CalendarPage> {
                                 ),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(25),
                                       color: Theme.of(context).floatingActionButtonTheme.backgroundColor),
                                   child: ListTile(
                                     onTap: () => showDialog(
@@ -307,8 +305,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   _editForm(model: Models(title: '', hour: '', day: ''));
                 },
               ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerFloat,
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
             ),
           );
         });

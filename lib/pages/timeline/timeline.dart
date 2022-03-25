@@ -24,7 +24,7 @@ class _TimeLineState extends State<TimeLine> {
   @override
   void initState() {
     selectedModels = {};
-    Future.delayed(300.milliseconds, () {
+    Future.delayed(500.milliseconds, () {
       m.findAll().then((value) {
         value.sort((a, b) {
           DateTime t1 = DateFormat('dd/MM/yyyy').parse(a.day);
@@ -52,7 +52,6 @@ class _TimeLineState extends State<TimeLine> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -186,7 +185,9 @@ class _TimeLineState extends State<TimeLine> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.orange,
           child: const Icon(Icons.add,color: Colors.white,),
-          onPressed: () => showDialog(
+          onPressed: () {
+            controller.validate.value = false;
+            showDialog(
             context: context,
             builder: (context) => Obx(() => SingleChildScrollView(
               child: AlertDialog(
@@ -195,9 +196,12 @@ class _TimeLineState extends State<TimeLine> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         TextFormField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
+                          decoration:InputDecoration(
+                            border: const OutlineInputBorder(),
                             hintText: 'Nhập ghi chú',
+                            errorText: controller.validate.value
+                                ? 'Chưa nhập ghi chú!'
+                                : null,
                           ),
                           controller: controller.eventController.value,
                         ),
@@ -241,21 +245,28 @@ class _TimeLineState extends State<TimeLine> {
                     actions: [
                       TextButton(
                         child: const Text('Cancel'),
-                        onPressed: () => Get.back(),
+                        onPressed: () {
+                          controller.validate.value = false;
+                          Get.back();
+                        }
                       ),
                       TextButton(
                         child: const Text("Ok"),
                         onPressed: () async {
-                          if (controller.eventController.value.text.isEmpty) {
+                          if(controller.eventController.value.text.isEmpty) {
+                            controller.validate.value = true;
                           } else {
+                            controller.validate.value = false;
+                          }
+
+                          if (!controller.validate.value) {
                             Models models = Models(
                                 title: controller.eventController.value.text,
                                 hour: controller.startTime.value,
                                 day: format.format(controller.date.value));
                             controller.listEvent.add(models);
 
-                            if (selectedModels
-                                .containsKey(format.format(selectedDay))) {
+                            if (selectedModels.containsKey(format.format(selectedDay))) {
                               selectedModels.update(format.format(selectedDay),
                                   (value) => value..add(models));
                             } else {
@@ -271,17 +282,17 @@ class _TimeLineState extends State<TimeLine> {
                               widget.onChanged!(selectedModels);
                             }
                             EasyLoading.showSuccess('Thêm mới thành công');
+                            controller.update();
+                            Get.back(result: selectedModels);
+                            controller.eventController.value.clear();
+                            setState(() {});
                           }
-                          controller.update();
-                          Get.back(result: selectedModels);
-                          controller.eventController.value.clear();
-                          setState(() {});
                         },
                       ),
                     ],
                   ),
             )),
-          ),
+          );}
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
