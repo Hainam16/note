@@ -30,12 +30,17 @@ dependencies:
   flutter:
     sdk: flutter
   get: ^4.6.1
-  table_calendar: ^3.0.4
-  timelines: ^0.1.0
+  get_storage: ^2.0.3
+  table_calendar: ^3.0.5
   intl: ^0.17.0
   path_provider: ^2.0.9
   sembast: ^3.2.0
-
+  path: ^1.8.0
+  flutter_slidable: ^1.2.0
+  flutter_local_notifications: ^9.4.0
+  timeline_tile: ^2.0.0
+  flutter_easyloading: ^3.0.3
+  flutter_native_splash: ^2.1.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -63,7 +68,7 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+#  assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
