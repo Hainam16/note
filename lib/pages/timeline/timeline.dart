@@ -166,10 +166,7 @@ class _TimeLineState extends State<TimeLine> {
                                   '${element?.day}'.substring(0, 10),
                                 ),
                                 Text(
-                                  getWeekday(DateFormat('dd/MM/yyyy')
-                                          .parse(element!.day)
-                                          .weekday +
-                                      1),
+                                  getWeekday(DateFormat('dd/MM/yyyy').parse(element!.day).weekday + 1),
                                   style: Theme.of(context).textTheme.subtitle2,
                                 )
                               ],
@@ -281,11 +278,11 @@ class _TimeLineState extends State<TimeLine> {
                             if (widget.onChanged != null) {
                               widget.onChanged!(selectedModels);
                             }
-                            EasyLoading.showSuccess('Thêm mới thành công');
-                            controller.update();
-                            Get.back(result: selectedModels);
-                            controller.eventController.value.clear();
-                            setState(() {});
+                              EasyLoading.showSuccess('Thêm mới thành công');
+                              controller.update();
+                              Get.back(result: selectedModels);
+                              controller.eventController.value.clear();
+                              setState(() {});
                           }
                         },
                       ),

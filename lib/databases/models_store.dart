@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:note/model/models.dart';
 import 'local_database.dart';
 
@@ -19,21 +17,17 @@ class ModelsStore {
   }
 
   update(Models entity) async {
-    debugPrint("UPDATING $entity");
     final finder = Finder(filter: Filter.byKey(entity.key));
     await _store.update(await _db, entity.toJson(), finder: finder);
   }
 
   delete(Models entity) async {
-    debugPrint("DELETING ${entity.key}");
     final finder = Finder(filter: Filter.byKey(entity.key));
     var dbs = await _db;
     await _store.delete(dbs, finder: finder);
-    debugPrint("DELETINGSuccess");
   }
 
   Future<Stream<List<Models>>> stream() async {
-    debugPrint("Geting Data Stream");
     var streamTransformer = StreamTransformer<
         List<RecordSnapshot<int, Map<String, dynamic>>>,
         List<Models>>.fromHandlers(
@@ -57,7 +51,6 @@ class ModelsStore {
     for (var element in snapshotList) {
       resultSet.add(Models.fromDatabase(element));
     }
-
     sink.add(resultSet);
   }
 }

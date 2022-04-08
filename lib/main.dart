@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:note/model/models.dart';
@@ -19,15 +18,6 @@ void main() async {
   initializeDateFormatting('vi_VN', null);
   return runApp(MyApp(items: res));
 }
-
-// const AndroidInitializationSettings initializationSettingsAndroid =
-// AndroidInitializationSettings('app_icon');
-// void selectNotification(String payload) async {
-//   if (payload != null) {
-//     debugPrint('notification payload: $payload');
-//   }
-//   await Get.to(CalendarPage);
-// }
 class MyApp extends StatelessWidget {
   final List<Models> items;
 
