@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:note/model/models.dart';
 import 'local_database.dart';
 

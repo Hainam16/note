@@ -42,7 +42,6 @@ class _TimecallState extends State<Timecall> {
 
   @override
   void didUpdateWidget(covariant Timecall oldWidget) {
-    // TODO: implement didUpdateWidget
     if (oldWidget.isDark != dark) {
       dark = widget.isDark;
     }
